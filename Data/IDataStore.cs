@@ -1,7 +1,10 @@
-﻿namespace Radiotech.Data;
+﻿using System.Collections.ObjectModel;
+
+namespace Radiotech.Data;
 
 public interface IDataStore<T>
 {
-    T Load();
-    void Save(T data);
+    ObservableCollection<T> Data { get; set; }
+    ObservableCollection<T> Load();
+    void Save(ObservableCollection<T> data);
 }

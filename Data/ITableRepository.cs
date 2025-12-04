@@ -2,7 +2,7 @@
 
 public interface ITableRepository
 {
-    public interface IFavoritesRepository
+    public interface ITableRepository
     {
         // IEnumerable<Person> GetAll ();
         //
@@ -10,7 +10,7 @@ public interface ITableRepository
         //
         // bool IsFavorite (Person person);
         //
-        // void InsertOrUpdate (IDataClass e);
+        // void InsertOrUpdate<T>(T e);
         //
         // void Delete (Person person);
 

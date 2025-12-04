@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.ObjectModel;
 using System.Text.Json;
 
 namespace Radiotech.Data
@@ -7,31 +8,20 @@ namespace Radiotech.Data
 	{
 		private const string appName = "RadioService";
 		private static string _folder;
+		private readonly IDataStore<TableData.Person> _personData;
+		public ObservableCollection<TableData.Person> PersonData { get => _personData.Data; set => _personData.Data = value; }
 		// private const string PERSON_PATH = "person.json";
 		//private const string COMPANY_PATH = "Company.json";
 		//private const string PRODUCT_PATH = "Product.json";
 		//private const string SPECIALTY_PATH = "Specialty.json";
 		//private const string EMPLOYEE_PATH = "Employee.json";
 		//private const string ORDER_PATH = "Order.json";
-		private JsonSerializerOptions options = new()
-		{
-			WriteIndented = true
-		};
 		public TableRepository()
 		{
 			_folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), appName);
 			Directory.CreateDirectory(_folder);
-		}
-		public List<TableData.Person> GetPerson()
-		{
-			try
-			{
-				using Stream stream = File.Open(Path.Combine(_folder, PERSON_PATH), FileMode.OpenOrCreate);
-				var p = JsonSerializer.Deserialize<List<TableData.Person>>(stream);
-
-				return p ?? throw new Exception("null");
-			}
-			catch { return []; }
+			
+			_personData = new JsonDataStore<TableData.Person>(Path.Combine(_folder, "person.json"));
 		}
 		
 		// private async Task Commit()
@@ -58,16 +48,16 @@ namespace Radiotech.Data
 		// 	// }
 		// }
 
-		public void InsertOrUpdate( e)
-		{
-			var path = Path.Combine(_folder, e.Path);
-			try
-			{
-				if (!File.Exists(path)) throw new Exception("The file does not exist");
-				string json = JsonSerializer.Serialize(e, options);
-				File.WriteAllText(path, json);
-			}
-			catch (Exception ex) { Console.WriteLine(ex); }
-		}
+		// public void InsertOrUpdate( e)
+		// {
+		// 	var path = Path.Combine(_folder, e.Path);
+		// 	try
+		// 	{
+		// 		if (!File.Exists(path)) throw new Exception("The file does not exist");
+		// 		string json = JsonSerializer.Serialize(e, options);
+		// 		File.WriteAllText(path, json);
+		// 	}
+		// 	catch (Exception ex) { Console.WriteLine(ex); }
+		// }
 	}
 }
