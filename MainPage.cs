@@ -59,8 +59,17 @@ public class MainPage : ContentPage
                 return grid;
             })
         };
-
-        Content = _collectionView;
+		var btn = new Button() { Text = "Add Person" };
+		Content = _collectionView;
+		Content = new ScrollView
+		{
+			Content = new VerticalStackLayout
+			{
+				Spacing = 24,
+				Padding = 4,
+				Children = { _collectionView, btn }
+			}
+		};
     }
 	// private CollectionView collectionView;
 	// public MainPage()

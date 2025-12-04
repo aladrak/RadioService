@@ -1,5 +1,4 @@
-﻿
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Text.Json;
 
 namespace Radiotech.Data
@@ -9,6 +8,7 @@ namespace Radiotech.Data
 		private const string appName = "RadioService";
 		private static string _folder;
 		private readonly IDataStore<TableData.Person> _personData;
+		private readonly IDataStore<TableData.Order> _orderData;
 		public ObservableCollection<TableData.Person> PersonData { get => _personData.Data; set => _personData.Data = value; }
 		// private const string PERSON_PATH = "person.json";
 		//private const string COMPANY_PATH = "Company.json";
@@ -22,6 +22,7 @@ namespace Radiotech.Data
 			Directory.CreateDirectory(_folder);
 			
 			_personData = new JsonDataStore<TableData.Person>(Path.Combine(_folder, "person.json"));
+			_orderData = new JsonDataStore<TableData.Order>(Path.Combine(_folder, "order.json"));
 		}
 		
 		// private async Task Commit()
