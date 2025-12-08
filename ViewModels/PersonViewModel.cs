@@ -13,22 +13,5 @@ public class PersonViewModel
     {
         _tableRepo = new TableRepository<TableData.Person>("person.json");
         Persons = new ObservableCollection<TableData.Person>();
-        Persons = _tableRepo.Load();
-        Persons.CollectionChanged += DataCollectionChanged;
-    }
-    private void DataCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        switch (e.Action)
-        {
-            case NotifyCollectionChangedAction.Add:
-                _tableRepo.InsertOrUpdate(Persons);
-                break;
-            case NotifyCollectionChangedAction.Remove:
-                _tableRepo.InsertOrUpdate(Persons);
-                break;
-            case NotifyCollectionChangedAction.Replace:
-                
-                break;
-        }
     }
 }

@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace Radiotech.Data;
 
-public class JsonDataStore<T> : IDataStore<T>
+public class JsonDataStore<T>
 {
     public ObservableCollection<T> Data { get; set; }
     private readonly string _dataPath;
