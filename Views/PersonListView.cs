@@ -1,6 +1,6 @@
 ﻿namespace Radiotech.Views;
 
-public class PersonListView
+public class PersonListView : ContentPage
 {
     
 }
