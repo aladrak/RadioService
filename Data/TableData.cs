@@ -1,5 +1,4 @@
-﻿
-namespace Radiotech.Data
+﻿namespace Radiotech.Data
 {
 	public static class TableData
 	{
