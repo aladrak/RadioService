@@ -63,7 +63,6 @@ public class MainPage : ContentPage
         };
 		var btn = new Button() { Text = "Add Person" };
 		btn.Clicked += OnShowPopupClicked;
-		// Content = _collectionView;
 		Content = new ScrollView
 		{
 			Content = new VerticalStackLayout
@@ -74,8 +73,8 @@ public class MainPage : ContentPage
 			}
 		};
     }
-    [Obsolete("Obsolete")]
-    private async void OnShowPopupClicked(object? sender, EventArgs e)
+    
+    private void OnShowPopupClicked(object? sender, EventArgs e)
     {
 	    string[] labels = ["ID", "Имя", "Отчество", "Фамилия", "Адрес", "Телефон"];
 	    var popup = new InputPopup<TableData.Person>(
@@ -92,16 +91,16 @@ public class MainPage : ContentPage
 		    }
 	    );
 
-	    await this.ShowPopupAsync(popup);
+	    this.ShowPopupAsync(popup).Wait();
 	    var result = popup.Result;
 	    if (result != null)
 	    {
-		    await DisplayAlert("Успех", $"Вы ввели: {result}", "OK");
+		    DisplayAlert("Success", $"You entered: {result}", "OK").Wait();
 		    _viewModel.Persons.Add(result);
 	    }
 	    else
 	    {
-		    await DisplayAlert("Ошибка", "Ошибка", "OK");
+		    DisplayAlert("Error", "Error", "OK").Wait();
 	    }
     }
 }
