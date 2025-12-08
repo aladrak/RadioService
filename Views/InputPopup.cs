@@ -27,9 +27,9 @@ public class InputPopup<T> : Popup
             layout.Add(entry);
         }
         
-        var okbtn = new Button { Text = "OK" };
-        okbtn.Clicked += OnClickedOk;
-        layout.Add(okbtn);
+        _okButton = new Button { Text = "OK" };
+        _okButton.Clicked += OnClickedOk;
+        layout.Add(_okButton);
         
         Content = layout;
     }
