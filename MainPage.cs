@@ -1,16 +1,18 @@
+using CommunityToolkit.Maui.Extensions;
 using Radiotech.Data;
 using Radiotech.ViewModels;
+using Radiotech.Views;
 
 namespace Radiotech;
 
 public class MainPage : ContentPage
 {
 	private readonly CollectionView _collectionView;
-    private readonly MainViewModel _viewModel;
+    private readonly PersonViewModel _viewModel;
 
     public MainPage()
     {
-        _viewModel = new MainViewModel();
+        _viewModel = new PersonViewModel();
 
         _collectionView = new CollectionView
         {
@@ -60,7 +62,8 @@ public class MainPage : ContentPage
             })
         };
 		var btn = new Button() { Text = "Add Person" };
-		Content = _collectionView;
+		btn.Clicked += OnShowPopupClicked;
+		// Content = _collectionView;
 		Content = new ScrollView
 		{
 			Content = new VerticalStackLayout
@@ -71,35 +74,34 @@ public class MainPage : ContentPage
 			}
 		};
     }
-	// private CollectionView collectionView;
-	// public MainPage()
-	// {
-	// 	Title = "Radio-Service";
-	// 	collectionView = new CollectionView
-	// 	{
-	// 		IsGrouped = true,
-	// 		SelectionMode = SelectionMode.None,
-	// 		BackgroundColor = Colors.Transparent,
-	// 		// ItemTemplate = new DataTemplate( () =>
-	// 		// {
-	// 		// 	var border = new Border
-	// 		// 	{
-	// 		// 		BackgroundColor = Colors.White,
-	// 		// 		Padding = 10,
-	// 		// 		Margin = new Thickness(16, 8),
-	// 		// 		InputTransparent = false
-	// 		// 	};
-	// 		// } )
-	// 	};
-	// 	Content = new VerticalStackLayout
-	// 	{
-	// 		Children = {
-	// 			new Label { 
-	// 			HorizontalOptions = LayoutOptions.Center, 
-	// 			VerticalOptions = LayoutOptions.Center, 
-	// 			Text = "Welcome to .NET MAUI!"
-	// 			}
-	// 		}
-	// 	};
-	// }
+    [Obsolete("Obsolete")]
+    private async void OnShowPopupClicked(object? sender, EventArgs e)
+    {
+	    string[] labels = ["ID", "Имя", "Отчество", "Фамилия", "Адрес", "Телефон"];
+	    var popup = new InputPopup<TableData.Person>(
+		    "New Person", 
+		    labels,
+		    entries => new TableData.Person
+		    {
+			    PersonID = int.Parse(entries[0].Text ?? "0"),
+			    FirstName = entries[1].Text ?? "",
+			    MidName = entries[2].Text ?? "",
+			    LastName = entries[3].Text ?? "",
+			    Address = entries[4].Text ?? "",
+			    Phone = entries[5].Text ?? ""
+		    }
+	    );
+
+	    await this.ShowPopupAsync(popup);
+	    var result = popup.Result;
+	    if (result != null)
+	    {
+		    await DisplayAlert("Успех", $"Вы ввели: {result}", "OK");
+		    _viewModel.Persons.Add(result);
+	    }
+	    else
+	    {
+		    await DisplayAlert("Ошибка", "Ошибка", "OK");
+	    }
+    }
 }
