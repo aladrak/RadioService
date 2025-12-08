@@ -4,46 +4,48 @@ namespace Radiotech.Views;
 
 public class InputPopup<T> : Popup
 {
-    public T Result { get; private set; }
-    public InputPopup(string title)
+    public T? Result { get; private set; }
+    private readonly Entry[] _entries;
+    private readonly Func<Entry[], T> _factory;
+    private readonly Button _okButton;
+    public InputPopup(string title, string[] labels, Func<Entry[], T> factory)
     {
         Result = default(T);
-        var entryList = new List<Entry>();
-        foreach (var field in typeof(T).GetProperties())
+        _factory = factory ?? throw new ArgumentNullException(nameof(factory));
+        _entries = new Entry[labels.Length];
+
+        var layout = new VerticalStackLayout { Padding = 20 };
+        layout.Add(new Label { Text = title, FontAttributes = FontAttributes.Bold, Margin = new Thickness(0, 0, 0, 10) });
+        for (int i = 0; i < labels.Length; i++)
         {
-            entryList.Add(new Entry
+            var entry = new Entry
             {
-                Text = field.Name,
-                Placeholder = string.Empty,
-            });
+                Placeholder = labels[i], 
+                WidthRequest = 45,
+            };
+            _entries[i] = entry;
+            layout.Add(entry);
         }
+        
+        var okbtn = new Button { Text = "OK" };
+        okbtn.Clicked += OnClickedOk;
+        layout.Add(okbtn);
+        
+        Content = layout;
+    }
 
-        var collection = new CollectionView()
+    private void OnClickedOk(object? sender, EventArgs e)
+    {
+        foreach (var entry in _entries)
+            if (string.IsNullOrEmpty(entry.Text)) break;
+        try
         {
-            ItemsSource = entryList,
-        };
-
-        var okbtn = new Button
-        {
-            Text = "OK",
-        };
-        okbtn.Clicked += (s, a) =>
-        {
-            foreach (var entry in entryList)
-                
+            Result = _factory(_entries);
             CloseAsync();
-        };
-        Content = new Border
+        }
+        catch (Exception ex)
         {
-            Content = new VerticalStackLayout
-            {
-                Children = { 
-                    new Label { Text = title, Margin = new Thickness(10) }, 
-                    collection, 
-                    okbtn 
-                }
-            },
-            Padding = 0
-        };
+            _okButton.Text = $"Ошибка: {ex.Message}";
+        }
     }
 }
