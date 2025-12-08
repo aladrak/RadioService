@@ -15,11 +15,12 @@ public class InputPopup<T> : Popup
         _entries = new Entry[labels.Length];
 
         var layout = new VerticalStackLayout { Padding = 20 };
-        layout.Add(new Label { Text = title, FontAttributes = FontAttributes.Bold, Margin = new Thickness(0, 0, 0, 10) });
+        layout.Add(new Label { Text = title, TextColor = Colors.Black, FontAttributes = FontAttributes.Bold, Margin = new Thickness(0, 0, 0, 10) });
         for (int i = 0; i < labels.Length; i++)
         {
             var entry = new Entry
             {
+                TextColor = Colors.Black,
                 Placeholder = labels[i], 
                 WidthRequest = 45,
             };
