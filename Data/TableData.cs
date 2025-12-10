@@ -16,55 +16,56 @@
 				return $"{PersonID} {FirstName} {MidName} {LastName} {Address} {Phone}";
 			}
 		}
+
 		public class Company
-		(
-			int CompanyID,
-			int PersonID,
-			string Bank,
-			string AccountNum,
-			string ITN
-		);
+		{
+			public int CompanyID { get; set; }
+			public int PersonID { get; set; }
+			public string Bank { get; set; }
+			public string AccountNum { get; set; }
+			public string ITN { get; set; }
+		}
 
 		public class Product
-		(
-			int ProductID,
-			string Mark,
-			string Country,
-			string Manufacturer,
-			string Photo,
-			DateTime ServiceLife
-		);
+		{
+			public int ProductID { get; set; }
+			public string Mark { get; set; }
+			public string Country { get; set; }
+			public string Manufacturer { get; set; }
+			public string Photo { get; set; }
+			public DateTime ServiceLife { get; set; }
+		}
 
 		public class Specialty
-		(
-			int SpecialtyID,
-			string Name,
-			string Description
-		);
+		{
+			public int SpecialtyID { get; set; }
+			public string Name { get; set; }
+			public string Description { get; set; }
+		}
 
 		public class Employee
-		(
-			int EmployeeID,
-			int SpecialtyID,
-			string FirstName,
-			string MidName,
-			string LastName,
-			string Address,
-			string Phone,
-			int Age,
-			int Skill
-		);
+		{
+			public int EmployeeID { get; set; }
+			public int SpecialtyID { get; set; }
+			public string FirstName { get; set; }
+			public string MidName { get; set; }
+			public string LastName { get; set; }
+			public string Address { get; set; }
+			public string Phone { get; set; }
+			public int Age { get; set; }
+			public int Skill { get; set; }
+		}
 
 		public class Order
-		(
-			int OrderID,
-			int ProductID,
-			int CompanyID,
-			int EmployeeID,
-			DateTime StartDate,
-			DateTime FinishDate,
-			List<string> FaultsList,
-			double Price
-		);
+		{
+			public int OrderID { get; set; }
+			public int ProductID { get; set; }
+			public int CompanyID { get; set; }
+			public int EmployeeID { get; set; }
+			public DateTime StartDate { get; set; }
+			public DateTime FinishDate { get; set; }
+			public List<string> FaultsList { get; set; }
+			public double Price { get; set; }
+		}
 	}
 }
