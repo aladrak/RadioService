@@ -6,55 +6,58 @@ namespace Radiotech.Data
 {
 	public class TableRepository<T> : ITableRepository
 	{
-		public ObservableCollection<T> Data;
 		private const string appName = "RadioService";
-		private readonly string _folder;
+		private static string _appFolder;
+		private readonly string _filePath;
 		// private const string PERSON_PATH = "person.json";
 		//private const string COMPANY_PATH = "company.json";
 		//private const string PRODUCT_PATH = "product.json";
 		//private const string SPECIALTY_PATH = "specialty.json";
 		//private const string EMPLOYEE_PATH = "employee.json";
 		//private const string ORDER_PATH = "order.json";
+		static TableRepository() 
+		{
+			_appFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), appName);
+			Directory.CreateDirectory(_appFolder);
+		}
+
 		public TableRepository(string filePath)
 		{
-			var appFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), appName);
-			Directory.CreateDirectory(appFolder);
-			_folder = Path.Combine(appFolder, filePath);
-			Data = new ObservableCollection<T>();
+			_filePath = Path.Combine(_appFolder, filePath);
 		}
-		private void DataCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-		{
-			switch (e.Action)
-			{
-				case NotifyCollectionChangedAction.Add:
-					InsertOrUpdate(Data);
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					InsertOrUpdate(Data);
-					break;
-				case NotifyCollectionChangedAction.Replace:
+		// private void DataCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+		// {
+		// 	switch (e.Action)
+		// 	{
+		// 		case NotifyCollectionChangedAction.Add:
+		// 			InsertOrUpdate(Data);
+		// 			break;
+		// 		case NotifyCollectionChangedAction.Remove:
+		// 			InsertOrUpdate(Data);
+		// 			break;
+		// 		case NotifyCollectionChangedAction.Replace:
                 
-					break;
-			}
-		}
-		public ObservableCollection<T> Load()
+		// 			break;
+		// 	}
+		// }
+		public List<T> GetAll()
 		{
-			if (!File.Exists(_folder))
-				return Activator.CreateInstance<ObservableCollection<T>>();
-			using Stream stream = File.Open(_folder, FileMode.OpenOrCreate);
+			if (!File.Exists(_filePath))
+				return Activator.CreateInstance<List<T>>();
+			using Stream stream = File.Open(_filePath, FileMode.OpenOrCreate);
 			// List = JsonSerializer.Deserialize<ObservableCollection<T>>(stream) 
 			//        ?? Activator.CreateInstance<ObservableCollection<T>>();
-			return JsonSerializer.Deserialize<ObservableCollection<T>>(stream) 
-			       ?? Activator.CreateInstance<ObservableCollection<T>>();
+			return JsonSerializer.Deserialize<List<T>>(stream) 
+			       ?? Activator.CreateInstance<List<T>>();
 		}
 		
-		public void InsertOrUpdate(ObservableCollection<T> data)
+		public void InsertOrUpdate(List<T> data)
 		{
 			try
 			{
-				if (!File.Exists(_folder)) throw new Exception("The file does not exist");
+				if (!File.Exists(_filePath)) throw new Exception("The file does not exist");
 				string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
-				File.WriteAllText(_folder, json);
+				File.WriteAllText(_filePath, json);
 			}
 			catch (Exception ex) { /* Nothing here */ }
 		}
@@ -97,18 +100,6 @@ namespace Radiotech.Data
 		// 	// {
 		// 	// 	ev(this, EventArgs.Empty);
 		// 	// }
-		// }
-
-		// public void InsertOrUpdate( e)
-		// {
-		// 	var path = Path.Combine(_folder, e.Path);
-		// 	try
-		// 	{
-		// 		if (!File.Exists(path)) throw new Exception("The file does not exist");
-		// 		string json = JsonSerializer.Serialize(e, options);
-		// 		File.WriteAllText(path, json);
-		// 	}
-		// 	catch (Exception ex) { Console.WriteLine(ex); }
 		// }
 	}
 }

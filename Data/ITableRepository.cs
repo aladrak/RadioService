@@ -2,18 +2,13 @@
 
 namespace Radiotech.Data;
 
-public interface ITableRepository
+public interface ITableRepository<T>
 {
-    public interface ITableRepository<T>
-    {
-        // Person FindById (string id);
-        //
-        // bool IsFavorite (Person person);
-        //
-        void InsertOrUpdate(ObservableCollection<T> e);
-        //
-        // void Delete (Person person);
+    // Person FindById (string id);
+    void InsertOrUpdate(List<T> e);
+    List<T> GetAll();
+    //
+    // void Delete (Person person);
 
-        event EventHandler Changed;
-    }
+    // event EventHandler Changed;
 }
