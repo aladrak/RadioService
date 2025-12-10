@@ -23,7 +23,7 @@
 			public int PersonID { get; set; }
 			public string Bank { get; set; }
 			public string AccountNum { get; set; }
-			public string ITN { get; set; }
+			public string ITN { get; set; } // ИНН для организаций 10 для физ лиц 12
 		}
 
 		public class Product
