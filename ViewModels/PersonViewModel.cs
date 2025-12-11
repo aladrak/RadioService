@@ -9,7 +9,7 @@ public class PersonViewModel
     public ObservableCollection<TableData.Person> Persons 
     {
         get => _persons; 
-        private set => SetProperty(ref _people, value); 
+        private set => _persons = value; 
     }
     private ObservableCollection<TableData.Person> _persons = [];
     private readonly ITableRepository<TableData.Person> _repository;
@@ -19,8 +19,19 @@ public class PersonViewModel
         _repository = new TableRepository<TableData.Person>("person.json");
         Persons = new ObservableCollection<TableData.Person>(_repository.GetAll());
     }
-    public void SavePersons()
+    public void Add(TableData.Person person)
     {
+        Persons.Add(person);
+        _repository.InsertOrUpdate(Persons.ToList());
+    }
+    public void Delete(TableData.Person person)
+    {
+        Persons.Remove(person);
+        _repository.InsertOrUpdate(Persons.ToList());
+    }
+    public void Update(TableData.Person person)
+    {
+        Persons.Insert(person.PersonID, person);
         _repository.InsertOrUpdate(Persons.ToList());
     }
 }
