@@ -31,10 +31,15 @@ public class InputView<T> : ContentPage
             layout.Add(entry);
         }
         
-        _okButton = new Button { Text = "OK" };
+        var btnLayout = new StackLayout { Padding = 20 };
+        _okButton = new Button { Text = "Save" };
         _okButton.Clicked += OnClickedSave;
-        layout.Add(_okButton);
+        btnLayout.Add(_okButton);
+        var cancelButton = new Button { Text = "Cancel" };
+        cancelButton.Clicked += OnClickedCancel;
+        btnLayout.Add(cancelButton);
         
+        layout.Add(btnLayout);
         Content = layout;
     }
 
