@@ -1,10 +1,8 @@
-﻿using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace Radiotech.Data
 {
-	public class TableRepository<T> : ITableRepository
+	public class TableRepository<T> : ITableRepository<T>
 	{
 		private const string appName = "RadioService";
 		private static string _appFolder;
