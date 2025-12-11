@@ -2,7 +2,7 @@
 using Radiotech.Data;
 using Radiotech.ViewModels;
 
-namespace Radiotech.Views;
+namespace Radiotech.Views.ListViews;
 
 public class PersonListView : ContentPage
 {
@@ -61,7 +61,7 @@ public class PersonListView : ContentPage
             })
         };
 		var btn = new Button() { Text = "Add Person" };
-		btn.Clicked += OnShowPopupClicked;
+		btn.Clicked += ShowInputView;
 		Content = new ScrollView
 		{
 			Content = new VerticalStackLayout
@@ -73,10 +73,10 @@ public class PersonListView : ContentPage
 		};
     }
     
-    private void OnShowPopupClicked(object? sender, EventArgs e)
+    private async void ShowInputView(object? sender, EventArgs e)
     {
 	    string[] labels = ["ID", "Имя", "Отчество", "Фамилия", "Адрес", "Телефон"];
-	    var popup = new InputPopup<TableData.Person>(
+	    var inputView = new InputView<TableData.Person>(
 		    "New Person", 
 		    labels,
 		    entries => new TableData.Person
@@ -87,19 +87,14 @@ public class PersonListView : ContentPage
 			    LastName = entries[3].Text ?? "",
 			    Address = entries[4].Text ?? "",
 			    Phone = entries[5].Text ?? ""
+		    },
+		    onSuccess: result =>
+		    {
+			    _viewModel.AddPerson(result);
+			    DisplayAlertAsync("Success", $"You entered: {result}", "OK");
 		    }
 	    );
-
-	    this.ShowPopupAsync(popup).Wait();
-	    var result = popup.Result;
-	    if (result != null)
-	    {
-		    DisplayAlert("Success", $"You entered: {result}", "OK").Wait();
-		    _viewModel.Persons.Add(result);
-	    }
-	    else
-	    {
-		    DisplayAlert("Error", "Nothing to add.", "OK").Wait();
-	    }
+	    await Navigation.PushModalAsync(inputView);
+		// DisplayAlertAsync("Error", "Nothing to add.", "OK").Wait();
     }
 }
