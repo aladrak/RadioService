@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui.Extensions;
+using Radiotech.Common;
 using Radiotech.Data;
 using Radiotech.ViewModels;
 
@@ -60,37 +61,44 @@ public class PersonListView : ContentPage
                 return grid;
             })
         };
-		var btn = new Button() { Text = "Add Person" };
-		btn.Clicked += ShowInputView;
+		var addButton = new Button{ Text = "Add Person" };
+		addButton.Clicked += ShowInputView;
 		Content = new ScrollView
 		{
 			Content = new VerticalStackLayout
 			{
 				Spacing = 24,
 				Padding = 4,
-				Children = { _collectionView, btn }
+				Children = { _collectionView, addButton }
 			}
 		};
     }
     
     private async void ShowInputView(object? sender, EventArgs e)
     {
-	    string[] labels = ["ID", "Имя", "Отчество", "Фамилия", "Адрес", "Телефон"];
+	    List<(string, DelegateValidator)> configFields = [
+		    ("ID", s => Validators.RequiredMinLength(s, 2)), 
+		    ("Имя", Validators.RequiredLettersOnly),
+		    ("Отчество", Validators.RequiredLettersOnly),
+		    ("Фамилия", Validators.RequiredLettersOnly),
+		    ("Адрес", s => (true, string.Empty)),
+		    ("Телефон", s => (true, string.Empty)) 
+	    ];
 	    var inputView = new InputView<TableData.Person>(
 		    "New Person", 
-		    labels,
-		    entries => new TableData.Person
+		    configFields,
+		    fields => new TableData.Person
 		    {
-			    PersonID = int.Parse(entries[0].Text ?? "0"),
-			    FirstName = entries[1].Text ?? "",
-			    MidName = entries[2].Text ?? "",
-			    LastName = entries[3].Text ?? "",
-			    Address = entries[4].Text ?? "",
-			    Phone = entries[5].Text ?? ""
+			    PersonID = int.Parse(fields[0].Control.Text ?? "0"),
+			    FirstName = fields[1].Control.Text ?? "",
+			    MidName = fields[2].Control.Text ?? "",
+			    LastName = fields[3].Control.Text ?? "",
+			    Address = fields[4].Control.Text ?? "",
+			    Phone = fields[5].Control.Text ?? ""
 		    },
 		    onSuccess: result =>
 		    {
-			    _viewModel.AddPerson(result);
+			    _viewModel.Add(result);
 			    DisplayAlertAsync("Success", $"You entered: {result}", "OK");
 		    }
 	    );

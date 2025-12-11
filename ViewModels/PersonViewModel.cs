@@ -6,6 +6,7 @@ namespace Radiotech.ViewModels;
 
 public class PersonViewModel
 {
+    public int FreeId { get => Persons.Max(p => p.PersonID) + 1; }
     public ObservableCollection<TableData.Person> Persons 
     {
         get => _persons; 
