@@ -2,7 +2,7 @@ using Radiotech.Views;
 
 namespace Radiotech;
 
-public class MainPage : ContentPage
+public partial class MainPage : ContentPage
 {
 	public MainPage()
     {
@@ -18,6 +18,6 @@ public class MainPage : ContentPage
     }
     private async void ToPersonPage(object? sender, EventArgs e)
     {
-        await Navigation.PushAsync(new PersonListView());
+        await Shell.Current.GoToAsync("PersonListView");
     }
 }
