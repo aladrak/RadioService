@@ -1,23 +1,28 @@
-using Radiotech.Views;
-
 namespace Radiotech;
 
-public partial class MainPage : ContentPage
+public class MainPage : ContentPage
 {
 	public MainPage()
     {
         // Title = "Main";
-        Button toCommonPageBtn = new Button
+        Button toPersonPageBtn = new Button
         {
             Text = "Person",
             HorizontalOptions = LayoutOptions.Start
         };
-        toCommonPageBtn.Clicked += ToPersonPage;
+        toPersonPageBtn.Clicked += ToPersonPage;
  
-        Content = new StackLayout { Children = { toCommonPageBtn } };
+        Button toEmployeePageBtn = new Button
+        {
+            Text = "Employee",
+            HorizontalOptions = LayoutOptions.Start
+        };
+        toPersonPageBtn.Clicked += ToEmployeePage;
+        Content = new HorizontalStackLayout { Padding = 30, Children = { toPersonPageBtn, toEmployeePageBtn } };
     }
-    private async void ToPersonPage(object? sender, EventArgs e)
-    {
+    private async void ToPersonPage(object? sender, EventArgs e) => 
         await Shell.Current.GoToAsync("PersonListView");
-    }
+    private async void ToEmployeePage(object? sender, EventArgs e) =>
+        await Shell.Current.GoToAsync("EmployeeListView");
+    
 }

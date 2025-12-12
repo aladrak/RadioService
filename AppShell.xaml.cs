@@ -10,6 +10,7 @@ public partial class AppShell : Shell
         InitializeComponent();
         
         Routing.RegisterRoute("PersonListView", typeof(PersonListView));
+        Routing.RegisterRoute("EmployeeListView", typeof(EmployeeListView));
         Routing.RegisterRoute("InputView", typeof(InputView));
     }
 }
