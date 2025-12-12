@@ -4,10 +4,16 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Radiotech"
-    xmlns:radiotech="using:Radiotech">
+    xmlns:radiotech="using:Radiotech"
+    xmlns:listViews="using:Radiotech.Views.ListViews">
     
     <ShellContent Title="Главная"
                   ContentTemplate="{DataTemplate radiotech:MainPage}"
                   Route="MainPage" />
-    
+    <!-- <ShellContent Title="Person List" -->
+    <!--               ContentTemplate="{DataTemplate listViews:PersonListView}" -->
+    <!--               Route="PersonListView" /> -->
+    <!-- <ShellContent Title="Employee List" -->
+    <!--               ContentTemplate="{DataTemplate listViews:EmployeeListView}" -->
+    <!--               Route="EmployeeListView" /> -->
 </Shell>
