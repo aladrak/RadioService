@@ -59,6 +59,7 @@ public sealed class ValidatedPicker
         string? initialValue = default)
     {
         Control = picker;
+        _items = items;
         ErrorLabel = errorLabel ?? throw new ArgumentNullException(nameof(errorLabel));
         Validator = validator ?? throw new ArgumentNullException(nameof(validator));
         Control.ItemsSource = items.ToList();
