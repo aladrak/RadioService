@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Maui.Extensions;
-using Radiotech.Common;
+﻿using Radiotech.Common;
 using Radiotech.Data;
 using Radiotech.ViewModels;
 
@@ -18,50 +17,45 @@ public class PersonListView : ContentPage
         {
             SelectionMode = SelectionMode.Single,
             ItemsSource = _viewModel.Persons,
-            ItemTemplate = new DataTemplate(() =>
-            {
-                var grid = new Grid
-                {
-                    Padding = 10,
-                    ColumnDefinitions =
-                    {
-                        new ColumnDefinition { Width = 40 },
-                        new ColumnDefinition { Width = GridLength.Star },
-                        new ColumnDefinition { Width = GridLength.Star },
-                        new ColumnDefinition { Width = GridLength.Star },
-                        new ColumnDefinition { Width = GridLength.Star },
-                        new ColumnDefinition { Width = GridLength.Star }
-                    }
-                };
-
-                var idLabel = new Label();
-                idLabel.SetBinding(Label.TextProperty, nameof(TableData.Person.PersonID));
-                grid.Add(idLabel, 0, 0);
-
-                var lastNameLabel = new Label();
-                lastNameLabel.SetBinding(Label.TextProperty, nameof(TableData.Person.LastName));
-                grid.Add(lastNameLabel, 1, 0);
-
-                var firstNameLabel = new Label();
-                firstNameLabel.SetBinding(Label.TextProperty, nameof(TableData.Person.FirstName));
-                grid.Add(firstNameLabel, 2, 0);
-
-                var midNameLabel = new Label();
-                midNameLabel.SetBinding(Label.TextProperty, nameof(TableData.Person.MidName));
-                grid.Add(midNameLabel, 3, 0);
-
-                var addressLabel = new Label();
-                addressLabel.SetBinding(Label.TextProperty, nameof(TableData.Person.Address));
-                grid.Add(addressLabel, 4, 0);
-
-                var phoneLabel = new Label();
-                phoneLabel.SetBinding(Label.TextProperty, nameof(TableData.Person.Phone));
-                grid.Add(phoneLabel, 5, 0);
-
-                return grid;
-            })
+            ItemTemplate = PersonItem()
         };
-		var addButton = new Button{ Text = "Add Person" };
+        _collectionView.SelectionChanged += async (_, e) =>
+        {
+	        if (e.CurrentSelection.FirstOrDefault() is not TableData.Person selectedItem)
+	        {
+		        _collectionView.SelectedItem = null;
+		        return;
+	        }
+	        
+	        _collectionView.SelectedItem = null;
+	        
+	        string action = await Shell.Current.DisplayActionSheetAsync(
+		        $"Action on «{selectedItem}»",
+		        "Cancel",
+		        null,
+		        "Edit",
+		        "Delete"
+	        );
+
+	        if (action == "Edit")
+	        {
+		        // TODO: Edit
+	        }
+	        else if (action == "Delete")
+	        {
+		        bool confirm = await Shell.Current.DisplayAlertAsync(
+			        "Confirmation",
+			        $"Delete «{selectedItem}»?",
+			        "Yes", "No"
+		        );
+
+		        if (confirm)
+		        {
+			        _viewModel.Delete(selectedItem);
+		        }
+	        }
+        };
+        var addButton = new Button{ Text = "Add Person" };
 		addButton.Clicked += ShowInputView;
 		Content = new ScrollView
 		{
@@ -73,28 +67,74 @@ public class PersonListView : ContentPage
 			}
 		};
     }
-    
+
+    private static DataTemplate PersonItem()
+    {
+	    return new DataTemplate(() =>
+	    {
+		    var grid = new Grid
+		    {
+			    VerticalOptions = LayoutOptions.Center,
+			    Padding = 10,
+			    ColumnSpacing = 10,
+			    ColumnDefinitions =
+			    {
+				    new ColumnDefinition { Width = 40 },
+				    new ColumnDefinition { Width = GridLength.Star },
+				    new ColumnDefinition { Width = GridLength.Star },
+				    new ColumnDefinition { Width = GridLength.Star },
+				    new ColumnDefinition { Width = GridLength.Star },
+				    new ColumnDefinition { Width = GridLength.Star }
+			    }
+		    };
+
+		    var idLabel = new Label();
+		    idLabel.SetBinding(Label.TextProperty, nameof(TableData.Person.PersonID));
+		    grid.Add(idLabel, 0, 0);
+
+		    var lastNameLabel = new Label();
+		    lastNameLabel.SetBinding(Label.TextProperty, nameof(TableData.Person.LastName));
+		    grid.Add(lastNameLabel, 1, 0);
+
+		    var firstNameLabel = new Label();
+		    firstNameLabel.SetBinding(Label.TextProperty, nameof(TableData.Person.FirstName));
+		    grid.Add(firstNameLabel, 2, 0);
+
+		    var midNameLabel = new Label();
+		    midNameLabel.SetBinding(Label.TextProperty, nameof(TableData.Person.MidName));
+		    grid.Add(midNameLabel, 3, 0);
+
+		    var addressLabel = new Label();
+		    addressLabel.SetBinding(Label.TextProperty, nameof(TableData.Person.Address));
+		    grid.Add(addressLabel, 4, 0);
+
+		    var phoneLabel = new Label();
+		    phoneLabel.SetBinding(Label.TextProperty, nameof(TableData.Person.Phone));
+		    grid.Add(phoneLabel, 5, 0);
+
+		    return grid;
+	    });
+    }
     private async void ShowInputView(object? sender, EventArgs e)
     {
-	    List<(string, DelegateValidator)> configFields = [
-		    ("ID", s => Validators.RequiredMinLength(s, 2)), 
-		    ("Имя", Validators.RequiredLettersOnly),
-		    ("Отчество", Validators.RequiredLettersOnly),
-		    ("Фамилия", Validators.RequiredLettersOnly),
-		    ("Адрес", s => (true, string.Empty)),
-		    ("Телефон", s => (true, string.Empty)) 
+	    List<(string, string[]?, DelegateValidator)> configFields = [
+		    ("Имя", null, Validators.RequiredLettersOnly),
+		    ("Отчество", null, Validators.RequiredMidName),
+		    ("Фамилия", null, Validators.RequiredLettersOnly),
+		    ("Адрес", null, Validators.RequiredNotNull),
+		    ("Телефон", null, s => Validators.RequiredDigitsOnlyFixedLength(s, 11))
 	    ];
 	    var inputView = new InputView<TableData.Person>(
 		    "New Person", 
 		    configFields,
-		    fields => new TableData.Person
+		    (fields, _) => new TableData.Person
 		    {
-			    PersonID = int.Parse(fields[0].Control.Text ?? "0"),
-			    FirstName = fields[1].Control.Text ?? "",
-			    MidName = fields[2].Control.Text ?? "",
-			    LastName = fields[3].Control.Text ?? "",
-			    Address = fields[4].Control.Text ?? "",
-			    Phone = fields[5].Control.Text ?? ""
+			    PersonID = _viewModel.FreeId,
+			    FirstName = fields[0].CurrentValue ?? "",
+			    MidName = fields[1].CurrentValue ?? "",
+			    LastName = fields[2].CurrentValue ?? "",
+			    Address = fields[3].CurrentValue ?? "",
+			    Phone = fields[4].CurrentValue ?? ""
 		    },
 		    onSuccess: result =>
 		    {
@@ -103,6 +143,5 @@ public class PersonListView : ContentPage
 		    }
 	    );
 	    await Navigation.PushModalAsync(inputView);
-		// DisplayAlertAsync("Error", "Nothing to add.", "OK").Wait();
     }
 }
