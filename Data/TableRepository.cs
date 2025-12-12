@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Text.Encodings.Web;
+using System.Text.Json;
 
 namespace Radiotech.Data
 {
@@ -54,7 +55,12 @@ namespace Radiotech.Data
 			try
 			{
 				if (!File.Exists(_filePath)) throw new Exception("The file does not exist");
-				string json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+				string json = JsonSerializer.Serialize(data, 
+					new JsonSerializerOptions
+					{
+						Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, 
+						WriteIndented = true,
+					});
 				File.WriteAllText(_filePath, json);
 			}
 			catch (Exception ex) { /* Nothing here */ }
