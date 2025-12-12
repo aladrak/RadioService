@@ -11,6 +11,5 @@ public partial class AppShell : Shell
         
         Routing.RegisterRoute("PersonListView", typeof(PersonListView));
         Routing.RegisterRoute("EmployeeListView", typeof(EmployeeListView));
-        Routing.RegisterRoute("InputView", typeof(InputView));
     }
 }
