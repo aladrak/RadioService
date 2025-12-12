@@ -1,18 +1,19 @@
-﻿using Radiotech.Common;
+﻿using System.Net.Mime;
+using Radiotech.Common;
 
 namespace Radiotech.Views;
 
 public class InputView<T> : ContentPage
 {
-    private T? Result { get; set; }
     private readonly Action<T>? _onSuccess;
     private readonly List<ValidatedField> _fields = [];
-    private readonly Func<ValidatedField[], T> _factory;
+    private readonly List<ValidatedPicker> _pickers = [];
+    private readonly Func<ValidatedField[], ValidatedPicker[], T> _factory;
     private readonly Button _okButton;
     public InputView(
         string title,
-        List<(string, DelegateValidator)> fieldConfigs, 
-        Func<ValidatedField[], T> factory, 
+        List<(string, string[]?, DelegateValidator)> fieldConfigs, 
+        Func<ValidatedField[], ValidatedPicker[], T> factory, 
         Action<T>? onSuccess = null)
     {
         _factory = factory ?? throw new ArgumentNullException(nameof(factory));
@@ -20,27 +21,39 @@ public class InputView<T> : ContentPage
 
         var layout = new VerticalStackLayout { Padding = 20 };
         layout.Add(new Label { Text = title, FontAttributes = FontAttributes.Bold, Margin = new Thickness(0, 0, 0, 10) });
-        foreach (var (placeholder, validator) in fieldConfigs)
+        foreach (var (placeholder, pickerItems, validator) in fieldConfigs)
         {
-            var entry = new Entry
-            {
-                Placeholder = placeholder, 
-                WidthRequest = 90,
-            };
             var error = new Label {TextColor =  Colors.Red, IsVisible = false};
-            var validatedField = new ValidatedField(entry, error, validator);
-            _fields.Add(validatedField);
+            if (pickerItems == null)
+            {
+                var entry = new Entry
+                {
+                    Placeholder = placeholder,
+                    WidthRequest = 240,
+                };
+                _fields.Add(new ValidatedField(entry, error, validator));
+                layout.Children.Add(entry);
+            }
+            else
+            {
+                var picker = new Picker
+                {
+                    Title = placeholder,
+                    WidthRequest = 240,
+                };
+                _pickers.Add(new ValidatedPicker(picker, pickerItems, error, validator));
+                layout.Children.Add(picker);
+            }
             
-            layout.Children.Add(entry);
             layout.Children.Add(error);
         }
 
-        _okButton = new Button { Text = "Save", IsEnabled = false };
+        _okButton = new Button { Text = "Save", WidthRequest = 100, BackgroundColor = Colors.Green, IsEnabled = false };
         _okButton.Clicked += OnClickedSave;
-        var cancelButton = new Button { Text = "Cancel" };
-        cancelButton.Clicked += (s, e) => Navigation.PopModalAsync();
+        var cancelButton = new Button { Text = "Cancel", WidthRequest = 100 };
+        cancelButton.Clicked += (_, _) => Navigation.PopModalAsync();
         
-        var btnLayout = new StackLayout 
+        var btnLayout = new HorizontalStackLayout() 
         { 
             Padding = 20 , 
             Children = { _okButton, cancelButton }
@@ -59,8 +72,9 @@ public class InputView<T> : ContentPage
     {
         try
         {
-            Result = _factory(_fields.ToArray());
-            _onSuccess?.Invoke(Result);
+            // _results.Add();
+            // Result = _factory(_fields.ToArray());
+            _onSuccess?.Invoke(_factory(_fields.ToArray(), _pickers.ToArray()));
             Navigation.PopModalAsync();
         }
         catch (Exception ex)
@@ -70,14 +84,7 @@ public class InputView<T> : ContentPage
     }
     private void UpdateSubmitButton()
     {
-        bool allValid = _fields.All(f => f.IsValid);
+        var allValid = _fields.All(f => f.IsValid);
         _okButton.IsEnabled = allValid;
-    }
-    
-    private async void OnSubmit(object sender, EventArgs e)
-    {
-        // Собираем данные
-        var values = _fields.Select(f => f.CurrentValue).ToArray();
-        await DisplayAlertAsync("Успех", $"Данные: {string.Join(", ", values)}", "OK");
     }
 }
