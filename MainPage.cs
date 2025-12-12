@@ -17,8 +17,8 @@ public class MainPage : ContentPage
             Text = "Employee",
             HorizontalOptions = LayoutOptions.Start
         };
-        toPersonPageBtn.Clicked += ToEmployeePage;
-        Content = new HorizontalStackLayout { Padding = 30, Children = { toPersonPageBtn, toEmployeePageBtn } };
+        toEmployeePageBtn.Clicked += ToEmployeePage;
+        Content = new VerticalStackLayout() { Padding = 30, Children = { toPersonPageBtn, toEmployeePageBtn } };
     }
     private async void ToPersonPage(object? sender, EventArgs e) => 
         await Shell.Current.GoToAsync("PersonListView");
