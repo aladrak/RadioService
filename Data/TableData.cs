@@ -13,7 +13,7 @@
 
 			public override string ToString()
 			{
-				return $"{PersonID} {FirstName} {MidName} {LastName} {Address} {Phone}";
+				return $"{FirstName} {MidName} {LastName} {Address} {Phone}";
 			}
 		}
 
@@ -24,6 +24,10 @@
 			public string Bank { get; set; }
 			public string AccountNum { get; set; } // 20 digits
 			public string ITN { get; set; } // ИНН для организаций 10 для физ лиц 12
+			public override string ToString()
+			{
+				return $"{Bank} {AccountNum} {ITN}";
+			}
 		}
 
 		public class Product
@@ -34,6 +38,10 @@
 			public string Manufacturer { get; set; }
 			public string Photo { get; set; } // link to photo
 			public DateTime ServiceLife { get; set; }
+			public override string ToString()
+			{
+				return $"{Mark} {Country} {Manufacturer} {Photo} {ServiceLife.ToString()}";
+			}
 		}
 
 		public class Specialty
@@ -54,6 +62,10 @@
 			public string Phone { get; set; }
 			public int Age { get; set; }
 			public int Skill { get; set; }
+			public override string ToString()
+			{
+				return $"{FirstName} {MidName} {LastName} {Address} {Phone}";
+			}
 		}
 
 		public class Order
@@ -66,6 +78,10 @@
 			public DateTime FinishDate { get; set; }
 			public List<string> FaultsList { get; set; } // thinking...
 			public double Price { get; set; }
+			public override string ToString()
+			{
+				return $"{OrderID} {StartDate.ToString()} {FinishDate.ToString()} {Price}";
+			}
 		}
 	}
 }
