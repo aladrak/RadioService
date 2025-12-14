@@ -41,13 +41,20 @@ namespace Radiotech.Data
 		// }
 		public List<T> GetAll()
 		{
-			if (!File.Exists(_filePath))
-				return Activator.CreateInstance<List<T>>();
-			using Stream stream = File.Open(_filePath, FileMode.OpenOrCreate);
-			// List = JsonSerializer.Deserialize<ObservableCollection<T>>(stream) 
-			//        ?? Activator.CreateInstance<ObservableCollection<T>>();
-			return JsonSerializer.Deserialize<List<T>>(stream) 
-			       ?? Activator.CreateInstance<List<T>>();
+			try 
+			{
+				if (!File.Exists(_filePath))
+					return Activator.CreateInstance<List<T>>();
+				using Stream stream = File.Open(_filePath, FileMode.OpenOrCreate);
+				// List = JsonSerializer.Deserialize<ObservableCollection<T>>(stream) 
+				//        ?? Activator.CreateInstance<ObservableCollection<T>>();
+				return JsonSerializer.Deserialize<List<T>>(stream) 
+					?? Activator.CreateInstance<List<T>>();
+			}
+			catch (Exception ex)
+			{
+				
+			}
 		}
 		
 		public void InsertOrUpdate(List<T> data)
