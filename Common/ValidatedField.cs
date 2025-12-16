@@ -47,6 +47,9 @@ public sealed class ValidatedPicker
     public Label ErrorLabel { get; }
     public bool IsValid { get; private set; }
     public string? SelectedValue { get; private set; }
+
+    public int SelectedIndex { get => Control.SelectedIndex; }
+
     public DelegateValidator Validator { get; }
     private string[] _items;
     private string _currentError = string.Empty;
