@@ -5,7 +5,8 @@ namespace Radiotech.ViewModels;
 
 public class EmployeeViewModel
 {
-    public int FreeId => Employees.Max(p => p.EmployeeID) + 1;
+    public int FreeId => Employees.Count != 0 ? Employees.Max(p => p.EmployeeID) + 1 : 1;
+
     public ObservableCollection<TableData.Employee> Employees
     {
         get => _employees;
