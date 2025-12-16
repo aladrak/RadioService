@@ -31,12 +31,14 @@ public static class Validators
         return (true, string.Empty);
     }
 
-    public static (bool isValid, string error) RequiredMinLength(string? input, int minLength)
+    public static (bool isValid, string error) RequiredPositiveDigitsOnly(string? input)
     {
-        if (RequiredNotNull(input).isValid)
-            return RequiredNotNull(input);
-        if (input!.Length < minLength)
-            return (false, $"Minimum length is - {minLength} characters");
+        if (string.IsNullOrWhiteSpace(input)) 
+            return (false, "The field cannot be empty");
+        if (!input.All(char.IsDigit))
+            return (false, "Only digits are allowed");
+        // if (int.Parse(input) > 0)
+        //     return (false, "The value of the number must be positive");
         return (true, string.Empty);
     }
 
