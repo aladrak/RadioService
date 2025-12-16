@@ -1,5 +1,6 @@
 ﻿using Radiotech.Common;
 using Radiotech.Data;
+using Radiotech.Ui;
 using Radiotech.ViewModels;
 
 namespace Radiotech.Views.ListViews;
@@ -63,7 +64,12 @@ public class PersonListView : ContentPage
 			{
 				Spacing = 24,
 				Padding = 4,
-				Children = { _collectionView, addButton }
+				Children =
+				{
+					UiTemplates.HeaderGrid(["ID", "Фамилия", "Имя", "Отчество", "Адрес", "Телефон"]),
+					_collectionView, 
+					addButton
+				}
 			}
 		};
     }
@@ -79,7 +85,7 @@ public class PersonListView : ContentPage
 			    ColumnSpacing = 10,
 			    ColumnDefinitions =
 			    {
-				    new ColumnDefinition { Width = 40 },
+				    new ColumnDefinition { Width = 20 },
 				    new ColumnDefinition { Width = GridLength.Star },
 				    new ColumnDefinition { Width = GridLength.Star },
 				    new ColumnDefinition { Width = GridLength.Star },

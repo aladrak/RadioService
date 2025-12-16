@@ -1,5 +1,6 @@
 using Radiotech.Common;
 using Radiotech.Data;
+using Radiotech.Ui;
 using Radiotech.ViewModels;
 
 namespace Radiotech.Views.ListViews;
@@ -12,12 +13,11 @@ public class EmployeeListView : ContentPage
     public EmployeeListView()
     {
         _viewModel = new EmployeeViewModel();
-
         _collectionView = new CollectionView
         {
             SelectionMode = SelectionMode.Single,
             ItemsSource = _viewModel.Employees,
-            ItemTemplate = CollectionItem()
+            ItemTemplate = new DataTemplate(CollectionItem)
         };
         _collectionView.SelectionChanged += async (_, e) =>
         {
@@ -63,92 +63,105 @@ public class EmployeeListView : ContentPage
 			{
 				Spacing = 24,
 				Padding = 4,
-				Children = { _collectionView, addButton }
+				Children = 
+				{
+					UiTemplates.HeaderGrid([
+						"ID", "Специальность", "Имя", "Отчество", "Фамилия", "Адрес", "Телефон", "Возраст", "Стаж"
+					]),
+					_collectionView, 
+					addButton 
+				}
 			}
 		};
     }
 
-    private static DataTemplate CollectionItem()
+    private static Grid CollectionItem()
     {
-	    return new DataTemplate(() =>
+	    var grid = new Grid
 	    {
-		    var grid = new Grid
+		    VerticalOptions = LayoutOptions.Center,
+		    Padding = 10,
+		    ColumnSpacing = 10,
+		    ColumnDefinitions =
 		    {
-			    VerticalOptions = LayoutOptions.Center,
-			    Padding = 10,
-			    ColumnSpacing = 10,
-			    ColumnDefinitions =
-			    {
-				    new ColumnDefinition { Width = 40 },
-				    new ColumnDefinition { Width = GridLength.Star },
-				    new ColumnDefinition { Width = GridLength.Star },
-				    new ColumnDefinition { Width = GridLength.Star },
-				    new ColumnDefinition { Width = GridLength.Star },
-				    new ColumnDefinition { Width = GridLength.Star },
-				    new ColumnDefinition { Width = GridLength.Star },
-				    new ColumnDefinition { Width = GridLength.Star }
-			    }
-		    };
+			    new ColumnDefinition { Width = 20 },
+			    new ColumnDefinition { Width = GridLength.Star },
+			    new ColumnDefinition { Width = GridLength.Star },
+			    new ColumnDefinition { Width = GridLength.Star },
+			    new ColumnDefinition { Width = GridLength.Star },
+			    new ColumnDefinition { Width = GridLength.Star },
+			    new ColumnDefinition { Width = GridLength.Star },
+			    new ColumnDefinition { Width = GridLength.Star }
+		    }
+	    };
 
-		    var idLabel = new Label();
-		    idLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.EmployeeID));
-		    grid.Add(idLabel, 0, 0);
+	    var idLabel = new Label();
+	    idLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.EmployeeID));
+	    grid.Add(idLabel, 0, 0);
+	    
+	    var idSpecialtyLabel = new Label();
+	    idSpecialtyLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.SpecialtyID));
+	    grid.Add(idSpecialtyLabel, 1, 0);
 
-		    var lastNameLabel = new Label();
-		    lastNameLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.LastName));
-		    grid.Add(lastNameLabel, 1, 0);
+	    var lastNameLabel = new Label();
+	    lastNameLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.LastName));
+	    grid.Add(lastNameLabel, 2, 0);
 
-		    var firstNameLabel = new Label();
-		    firstNameLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.FirstName));
-		    grid.Add(firstNameLabel, 2, 0);
+	    var firstNameLabel = new Label();
+	    firstNameLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.FirstName));
+	    grid.Add(firstNameLabel, 3, 0);
 
-		    var midNameLabel = new Label();
-		    midNameLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.MidName));
-		    grid.Add(midNameLabel, 3, 0);
+	    var midNameLabel = new Label();
+	    midNameLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.MidName));
+	    grid.Add(midNameLabel, 4, 0);
 
-		    var addressLabel = new Label();
-		    addressLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.Address));
-		    grid.Add(addressLabel, 4, 0);
+	    var addressLabel = new Label();
+	    addressLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.Address));
+	    grid.Add(addressLabel, 5, 0);
 
-		    var phoneLabel = new Label();
-		    phoneLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.Phone));
-		    grid.Add(phoneLabel, 5, 0);
-		    
-		    var ageLabel = new Label();
-		    ageLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.Age));
-		    grid.Add(ageLabel, 6, 0);
-		    
-		    var skillLabel = new Label();
-		    phoneLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.Skill));
-		    grid.Add(skillLabel, 7, 0);
+	    var phoneLabel = new Label();
+	    phoneLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.Phone));
+	    grid.Add(phoneLabel, 6, 0);
+	    
+	    var ageLabel = new Label();
+	    ageLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.Age));
+	    grid.Add(ageLabel, 7, 0);
+	    
+	    var skillLabel = new Label();
+	    skillLabel.SetBinding(Label.TextProperty, nameof(TableData.Employee.Skill));
+	    grid.Add(skillLabel, 8, 0);
 
-		    return grid;
-	    });
+	    return grid;
     }
     private async void ShowInputView(object? sender, EventArgs e)
     {
+	    var specialityList =
+		    new TableRepository<TableData.Specialty>("specialty.json").GetAll();
 	    List<(string, string[]?, DelegateValidator)> configFields = [
-		    ("Специальность", ["Рыбак", "Кучер"], Validators.RequiredNotNull),
+		    ("Специальность", specialityList
+			    .Select<TableData.Specialty, string>(n => n.Name).ToArray(), Validators.RequiredNotNull),
 		    ("Имя", null, Validators.RequiredLettersOnly),
 		    ("Отчество", null, Validators.RequiredMidName),
 		    ("Фамилия", null, Validators.RequiredLettersOnly),
 		    ("Адрес", null, Validators.RequiredNotNull),
-		    ("Телефон", null, s => Validators.RequiredDigitsOnlyFixedLength(s, 11))
+		    ("Телефон", null, s => Validators.RequiredDigitsOnlyFixedLength(s, 11)),
+		    ("Возраст", null, Validators.RequiredPositiveDigitsOnly),
+		    ("Стаж", null, Validators.RequiredPositiveDigitsOnly)
 	    ];
 	    var inputView = new InputView<TableData.Employee>(
 		    "New Employee", 
 		    configFields,
-		    (fields, _) => new TableData.Employee
+		    (fields, pickers) => new TableData.Employee
 		    {
 			    EmployeeID = _viewModel.FreeId,
-			    SpecialtyID = -1,
+			    SpecialtyID = specialityList[ pickers[0].SelectedIndex ].SpecialtyID,
 			    FirstName = fields[0].CurrentValue ?? "",
 			    MidName = fields[1].CurrentValue ?? "",
 			    LastName = fields[2].CurrentValue ?? "",
 			    Address = fields[3].CurrentValue ?? "",
 			    Phone = fields[4].CurrentValue ?? "",
-			    Age = -1,
-			    Skill = -1
+			    Age =  int.Parse(fields[5].CurrentValue),
+			    Skill = int.Parse(fields[6].CurrentValue)
 		    },
 		    onSuccess: result =>
 		    {
