@@ -27,7 +27,7 @@ public abstract class ListViewBase<T> : ContentPage where T : class
         };
         CollectionView.SelectionChanged += OnSelectionChanged;
 
-        var addButton = new Button { Text = $"Add {title}" };
+        var addButton = new Button { Text = $"Добавить {title}" };
         addButton.Clicked += OnAddClicked;
 
         Content = new ScrollView
@@ -61,13 +61,13 @@ public abstract class ListViewBase<T> : ContentPage where T : class
         CollectionView.SelectedItem = null;
 
         string action = await Shell.Current.DisplayActionSheetAsync(
-            $"Action on item", "Cancel", null, "Edit", "Delete");
+            $"Действие над элементом", "Отмена", null, "Изменить", "Удалить");
 
-        if (action == "Edit")
+        if (action == "Изменить")
             await ShowEditForm(item);
-        else if (action == "Delete")
+        else if (action == "Удалить")
         {
-            bool confirm = await DisplayAlertAsync("Confirm", "Delete?", "Yes", "No");
+            bool confirm = await DisplayAlertAsync("Подтверждение", "Удалить?", "Да", "Нет");
             if (confirm) OnDelete(item);
         }
     }
