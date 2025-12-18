@@ -6,7 +6,7 @@ public sealed class ValidatedEntry : IInputControl
     public Label ErrorLabel { get; } = new() { TextColor = Colors.Red, 
         //IsVisible = false
     };
-    public object? GetValue() => _lastNotifiedValue;
+    public object? GetValue() => string.IsNullOrEmpty(_lastNotifiedValue) ? Control.Text : _lastNotifiedValue;
     public bool IsValid { get; private set; } = false;  
     public void SetValue(object? value)
     {
@@ -38,7 +38,11 @@ public sealed class ValidatedEntry : IInputControl
     {
         _validator = validator;
         Control.Placeholder = placeholder;
-        if (initialValue != null) Control.Text = initialValue;
+        if (initialValue != null)
+        {
+            Control.Text = initialValue;
+            IsValid = true;
+        }
         Control.TextChanged += OnTextChanged;
     }
     private void OnTextChanged(object? sender, TextChangedEventArgs e)
