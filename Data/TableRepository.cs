@@ -1,7 +1,4 @@
-﻿using System.Text.Encodings.Web;
-using System.Text.Json;
-using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+﻿using Newtonsoft.Json;
 
 namespace Radiotech.Data;
 
@@ -10,12 +7,6 @@ public class TableRepository<T> : ITableRepository<T>
 	private const string appName = "RadioService";
 	private static string _appFolder;
 	private readonly string _filePath;
-	// private const string PERSON_PATH = "person.json";
-	//private const string COMPANY_PATH = "company.json";
-	//private const string PRODUCT_PATH = "product.json";
-	//private const string SPECIALTY_PATH = "specialty.json";
-	//private const string EMPLOYEE_PATH = "employee.json";
-	//private const string ORDER_PATH = "order.json";
 	static TableRepository() 
 	{
 		_appFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), appName);
@@ -30,12 +21,9 @@ public class TableRepository<T> : ITableRepository<T>
 	{
 		try 
 		{
-			// if (!File.Exists(_filePath))
-			// 	return Activator.CreateInstance<List<T>>();
 			using Stream stream = File.Open(_filePath, FileMode.OpenOrCreate);
 			var streamRead = new StreamReader(stream).ReadToEnd();
-			// List = JsonSerializer.Deserialize<ObservableCollection<T>>(stream) 
-			//        ?? Activator.CreateInstance<ObservableCollection<T>>();
+			
 			return JsonConvert.DeserializeObject<List<T>>(streamRead)
 				?? Activator.CreateInstance<List<T>>();
 		}
