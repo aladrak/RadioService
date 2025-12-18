@@ -5,24 +5,28 @@ public class MainPage : ContentPage
 	public MainPage()
     {
         // Title = "Main";
-        Button toPersonPageBtn = new Button
-        {
-            Text = "Person",
-            HorizontalOptions = LayoutOptions.Start
-        };
-        toPersonPageBtn.Clicked += ToPersonPage;
+        var layout = new VerticalStackLayout() { Padding = 30 };
+        
+        var personBtn = new Button { Text = "Person", HorizontalOptions = LayoutOptions.Start };
+        personBtn.Clicked += (_, _) => Shell.Current.GoToAsync("PersonListView");
+        layout.Children.Add(personBtn);
  
-        Button toEmployeePageBtn = new Button
-        {
-            Text = "Employee",
-            HorizontalOptions = LayoutOptions.Start
-        };
-        toEmployeePageBtn.Clicked += ToEmployeePage;
-        Content = new VerticalStackLayout() { Padding = 30, Children = { toPersonPageBtn, toEmployeePageBtn } };
+        var employeeBtn = new Button { Text = "Employee", HorizontalOptions = LayoutOptions.Start };
+        employeeBtn.Clicked += (_, _) => Shell.Current.GoToAsync("EmployeeListView");
+        layout.Children.Add(employeeBtn);
+        
+        var productBtn = new Button { Text = "Product", HorizontalOptions = LayoutOptions.Start };
+        productBtn.Clicked += (_, _) => Shell.Current.GoToAsync("ProductListView");
+        layout.Children.Add(productBtn);
+        
+        var companyBtn = new Button { Text = "Company", HorizontalOptions = LayoutOptions.Start };
+        companyBtn.Clicked += (_, _) => Shell.Current.GoToAsync("CompanyListView");
+        layout.Children.Add(companyBtn);
+        
+        var orderBtn = new Button { Text = "Order", HorizontalOptions = LayoutOptions.Start };
+        orderBtn.Clicked += (_, _) => Shell.Current.GoToAsync("OrderListView");
+        layout.Children.Add(orderBtn);
+        
+        Content = layout;
     }
-    private async void ToPersonPage(object? sender, EventArgs e) => 
-        await Shell.Current.GoToAsync("PersonListView");
-    private async void ToEmployeePage(object? sender, EventArgs e) =>
-        await Shell.Current.GoToAsync("EmployeeListView");
-    
 }
