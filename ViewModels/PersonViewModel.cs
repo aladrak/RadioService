@@ -1,13 +1,11 @@
 ﻿using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using Radiotech.Common;
 using Radiotech.Data;
 
 namespace Radiotech.ViewModels;
 
 public class PersonViewModel
 {
-    public int FreeId => Persons.Max(p => p.PersonID) + 1;
+    public int FreeId => Persons.Count() != 0 ? Persons.Max(p => p.PersonID) + 1 : 1;
     public ObservableCollection<TableData.Person> Persons 
     {
         get => _persons; 
@@ -31,9 +29,9 @@ public class PersonViewModel
         Persons.Remove(person);
         _repository.InsertOrUpdate(Persons.ToList());
     }
-    public void Update(TableData.Person person)
+    public void Update(TableData.Person old, TableData.Person cur)
     {
-        Persons.Insert(Persons.IndexOf(person), person);
+        Persons[Persons.IndexOf(old)] = cur;
         _repository.InsertOrUpdate(Persons.ToList());
     }
 }
