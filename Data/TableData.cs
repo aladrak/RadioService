@@ -10,6 +10,7 @@
 			public string LastName { get; set; }
 			public string Address { get; set; }
 			public string Phone { get; set; }
+			public string? DiscountCard { get; set; }
 
 			public override string ToString()
 			{
@@ -20,19 +21,24 @@
 		public class Company
 		{
 			public int CompanyID { get; init; }
-			public int? PersonID { get; set; }
+			public string Name { get; set; }
+			public string ManagerFullName { get; set; }
 			public string Bank { get; set; }
 			public string AccountNum { get; set; } // 20 digits
 			public string ITN { get; set; } // ИНН для организаций 10 для физ лиц 12
+			public string Address { get; set; }
+			public string Phone { get; set; }
+			public string? DiscountCard { get; set; }
 			public override string ToString()
 			{
-				return $"{Bank} {AccountNum} {ITN}";
+				return $"{Name} {ManagerFullName} {Bank} {Address} {Phone}";
 			}
 		}
 
 		public class Product
 		{
 			public int ProductID { get; init; }
+			public string Type { get; set; }
 			public string Mark { get; set; }
 			public string Country { get; set; }
 			public string Manufacturer { get; set; }
@@ -40,7 +46,7 @@
 			public DateTime ServiceLife { get; set; }
 			public override string ToString()
 			{
-				return $"{Mark} {Country} {Manufacturer} {Photo} {ServiceLife.ToString()}";
+				return $"{Type} {Mark} {Country} {Manufacturer} {Photo}";
 			}
 		}
 
@@ -72,8 +78,11 @@
 		{
 			public int OrderID { get; init; }
 			public int ProductID { get; set; }
-			public int CompanyID { get; set; }
 			public int EmployeeID { get; set; }
+			
+			public int? CompanyID { get; set; }
+			public int? PersonID { get; set; }
+			
 			public DateTime StartDate { get; set; } // DateTime field
 			public DateTime FinishDate { get; set; }
 			public List<string> FaultsList { get; set; } // thinking...
