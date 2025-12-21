@@ -6,7 +6,7 @@ namespace Radiotech.Views.ListViews;
 
 public class CompanyListView : ListViewBase<TableData.Company>
 {
-    private static readonly CompanyViewModel ViewModel = new CompanyViewModel();
+    private static readonly CompanyViewModel ViewModel = new();
 
     public CompanyListView() : base(
 	    "Компания",
@@ -80,14 +80,17 @@ public class CompanyListView : ListViewBase<TableData.Company>
     {
 	    var fields = new List<IInputControl>
 	    {
-		    new ValidatedEntry("Название", Validators.RequiredLettersOnly),
-		    new ValidatedEntry("ФИО Руководителя", Validators.RequiredLettersOnly),
-		    new ValidatedEntry("Банк", Validators.RequiredLettersOnly),
-		    new ValidatedEntry("Расчетный счет", Validators.RequiredNotNull),
-		    new ValidatedEntry("ИНН", Validators.RequiredNotNull),
+		    new ValidatedEntry("Название", Validators.LettersSpacesCommasOnly),
+		    new ValidatedEntry("ФИО Руководителя", Validators.LettersSpacesCommasOnly),
+		    new ValidatedEntry("Банк", Validators.LettersSpacesCommasOnly),
+		    new ValidatedEntry("Расчетный счет", 
+			    s => Validators.DigitsOnlyFixedLength(s, 20)),
+		    new ValidatedEntry("ИНН", 
+			    s => Validators.DigitsOnlyFixedLength(s, 10)),
 		    new ValidatedEntry("Адрес", Validators.RequiredNotNull),
-		    new ValidatedEntry("Телефон", Validators.RequiredNotNull),
-		    new ValidatedEntry("Дисконтная карта", Validators.RequiredNotNull)
+		    new ValidatedEntry("Телефон", 
+			    s => Validators.DigitsOnlyFixedLength(s, 11)),
+		    new ValidatedEntry("Дисконтная карта", Validators.RequiredDiscountCard)
 	    };
 	    var inputView = new InputView<TableData.Company>(
 		    "Добавить Юр. лицо",
@@ -116,14 +119,17 @@ public class CompanyListView : ListViewBase<TableData.Company>
     {
 	    var fields = new List<IInputControl>
 	    {
-		    new ValidatedEntry("Название", Validators.RequiredLettersOnly, item.Name),
-		    new ValidatedEntry("ФИО Руководителя", Validators.RequiredLettersOnly, item.ManagerFullName),
-		    new ValidatedEntry("Банк", Validators.RequiredLettersOnly, item.Bank),
-		    new ValidatedEntry("Расчетный счет", Validators.RequiredNotNull, item.AccountNum),
-		    new ValidatedEntry("ИНН", Validators.RequiredNotNull, item.ITN),
+		    new ValidatedEntry("Название", Validators.LettersSpacesCommasOnly, item.Name),
+		    new ValidatedEntry("ФИО Руководителя", Validators.LettersSpacesCommasOnly, item.ManagerFullName),
+		    new ValidatedEntry("Банк", Validators.LettersSpacesCommasOnly, item.Bank),
+		    new ValidatedEntry("Расчетный счет", 
+			    s => Validators.DigitsOnlyFixedLength(s, 20), item.AccountNum),
+		    new ValidatedEntry("ИНН", 
+			    s => Validators.DigitsOnlyFixedLength(s, 10), item.ITN),
 		    new ValidatedEntry("Адрес", Validators.RequiredNotNull, item.Address),
-		    new ValidatedEntry("Телефон", Validators.RequiredNotNull, item.Phone),
-		    new ValidatedEntry("Дисконтная карта", Validators.RequiredNotNull, item.DiscountCard),
+		    new ValidatedEntry("Телефон", 
+			    s => Validators.DigitsOnlyFixedLength(s, 11), item.Phone),
+		    new ValidatedEntry("Дисконтная карта", Validators.RequiredDiscountCard, item.DiscountCard),
 	    };
 	    var inputView = new InputView<TableData.Company>(
 		    "Редактирование Юр. лица", 

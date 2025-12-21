@@ -6,7 +6,7 @@ namespace Radiotech.Views;
 public abstract class ListViewBase<T> : ContentPage where T : class
 {
     protected readonly CollectionView CollectionView;
-    protected readonly ObservableCollection<T> Items;
+    // protected readonly ObservableCollection<T> Items;
     // protected readonly string[] Headers;
     // protected readonly Func<Grid> ItemTemplateFactory;
     protected ListViewBase(
@@ -16,13 +16,13 @@ public abstract class ListViewBase<T> : ContentPage where T : class
         Func<Grid> itemTemplate)
     {
         // Headers = headers;
-        Items = items;
+        // Items = items;
         // ItemTemplateFactory = itemTemplate;
 
         CollectionView = new CollectionView
         {
             SelectionMode = SelectionMode.Single,
-            ItemsSource = Items,
+            ItemsSource = items,
             ItemTemplate = new DataTemplate(itemTemplate)
         };
         CollectionView.SelectionChanged += OnSelectionChanged;

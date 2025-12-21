@@ -5,74 +5,16 @@ using Radiotech.ViewModels;
 
 namespace Radiotech.Views.ListViews;
 
-public class EmployeeListView : ContentPage
+public class EmployeeListView : ListViewBase<TableData.Employee>
 {
-    private readonly CollectionView _collectionView;
-    private readonly EmployeeViewModel _viewModel;
-
-    public EmployeeListView()
+    private static readonly EmployeeViewModel ViewModel = new();
+    public EmployeeListView() : base(
+	    "Сотрудника",
+	    ["ID", "Специальность", "Фамилия", "Имя", "Отчество", "Адрес", "Телефон", "Возраст", "Стаж"],
+	    ViewModel.Employees,
+	    CollectionItem)
     {
-        _viewModel = new EmployeeViewModel();
-        _collectionView = new CollectionView
-        {
-            SelectionMode = SelectionMode.Single,
-            ItemsSource = _viewModel.Employees,
-            ItemTemplate = new DataTemplate(CollectionItem)
-        };
-        _collectionView.SelectionChanged += async (_, e) =>
-        {
-	        if (e.CurrentSelection.FirstOrDefault() is not TableData.Employee selectedItem)
-	        {
-		        _collectionView.SelectedItem = null;
-		        return;
-	        }
-	        
-	        _collectionView.SelectedItem = null;
-	        
-	        string action = await Shell.Current.DisplayActionSheetAsync(
-		        $"Action on «{selectedItem}»",
-		        "Cancel",
-		        null,
-		        "Edit",
-		        "Delete"
-	        );
-
-	        if (action == "Edit")
-	        {
-		        // TODO: Edit
-	        }
-	        else if (action == "Delete")
-	        {
-		        bool confirm = await Shell.Current.DisplayAlertAsync(
-			        "Confirmation",
-			        $"Delete «{selectedItem}»?",
-			        "Yes", "No"
-		        );
-
-		        if (confirm)
-		        {
-			        _viewModel.Delete(selectedItem);
-		        }
-	        }
-        };
-        var addButton = new Button{ Text = "Add Employee" };
-		addButton.Clicked += ShowInputView;
-		Content = new ScrollView
-		{
-			Content = new VerticalStackLayout
-			{
-				Spacing = 24,
-				Padding = 4,
-				Children = 
-				{
-					UiTemplates.HeaderGrid([
-						"ID", "Специальность", "Имя", "Отчество", "Фамилия", "Адрес", "Телефон", "Возраст", "Стаж"
-					]),
-					_collectionView, 
-					addButton 
-				}
-			}
-		};
+	    // Nothing now
     }
 
     private static Grid CollectionItem()
@@ -133,42 +75,83 @@ public class EmployeeListView : ContentPage
 
 	    return grid;
     }
-    private async void ShowInputView(object? sender, EventArgs e)
+    protected override async Task ShowAddForm()
     {
-	    var specialityList =
-		    new TableRepository<TableData.Specialty>("specialty.json").GetAll();
-	    List<(string, string[]?, DelegateValidator)> configFields = [
-		    ("Специальность", specialityList
-			    .Select<TableData.Specialty, string>(n => n.Name).ToArray(), Validators.RequiredNotNull),
-		    ("Имя", null, Validators.RequiredLettersOnly),
-		    ("Отчество", null, Validators.RequiredMidName),
-		    ("Фамилия", null, Validators.RequiredLettersOnly),
-		    ("Адрес", null, Validators.RequiredNotNull),
-		    ("Телефон", null, s => Validators.RequiredDigitsOnlyFixedLength(s, 11)),
-		    ("Возраст", null, Validators.RequiredPositiveDigitsOnly),
-		    ("Стаж", null, Validators.RequiredPositiveDigitsOnly)
-	    ];
+	    var fields = new List<IInputControl>
+	    {
+		    new ValidatedPicker("Специальность", ViewModel.Specialties
+			    .Select<TableData.Specialty, string>(n => n.Name).ToArray()),
+		    new ValidatedEntry("Имя", Validators.LettersOnly),
+		    new ValidatedEntry("Отчество", Validators.RequiredMidName),
+		    new ValidatedEntry("Фамилия", Validators.LettersOnly),
+		    new ValidatedEntry("Адрес", Validators.RequiredNotNull),
+		    new ValidatedEntry("Телефон", s => Validators.DigitsOnlyFixedLength(s, 11)),
+		    new ValidatedEntry("Возраст", Validators.RequiredDigitsOnly),
+		    new ValidatedEntry("Стаж", Validators.RequiredDigitsOnly)
+	    };
 	    var inputView = new InputView<TableData.Employee>(
-		    "New Employee", 
-		    configFields,
-		    (fields, pickers) => new TableData.Employee
+		    "Добавить сотрудника",
+		    fields,
+		    ctrls => new TableData.Employee
 		    {
-			    EmployeeID = _viewModel.FreeId,
-			    SpecialtyID = specialityList[ pickers[0].SelectedIndex ].SpecialtyID,
-			    FirstName = fields[0].CurrentValue ?? "",
-			    MidName = fields[1].CurrentValue ?? "",
-			    LastName = fields[2].CurrentValue ?? "",
-			    Address = fields[3].CurrentValue ?? "",
-			    Phone = fields[4].CurrentValue ?? "",
-			    Age =  int.Parse(fields[5].CurrentValue),
-			    Skill = int.Parse(fields[6].CurrentValue)
+			    EmployeeID = ViewModel.FreeId,
+			    SpecialtyID = 
+				    ViewModel.Specialties.FirstOrDefault(a => a.Name == ((string?)ctrls[0].GetValue() ?? "1"))!.SpecialtyID,
+			    FirstName = (string?)ctrls[1].GetValue() ?? "",
+			    MidName = (string?)ctrls[2].GetValue() ?? "",
+			    LastName = (string?)ctrls[3].GetValue() ?? "",
+			    Address = (string?)ctrls[4].GetValue() ?? "",
+			    Phone = (string?)ctrls[5].GetValue() ?? "",
+			    Age =  int.Parse((string?)ctrls[6].GetValue() ?? "18"),
+			    Skill = int.Parse((string?)ctrls[7].GetValue() ?? "1")
 		    },
 		    onSuccess: result =>
 		    {
-			    _viewModel.Add(result);
-			    DisplayAlertAsync("Success", $"You entered: {result}", "OK");
+			    ViewModel.Add(result);
+			    DisplayAlertAsync("Успех", $"Вы ввели: {result}", "OK");
 		    }
 	    );
 	    await Navigation.PushModalAsync(inputView);
     }
+    protected override async Task ShowEditForm(TableData.Employee item)
+    {
+	    var fields = new List<IInputControl>
+	    {
+		    new ValidatedPicker("Специальность", ViewModel.Specialties
+			    .Select<TableData.Specialty, string>(n => n.Name).ToArray(), 
+			    ViewModel.Specialties.FirstOrDefault(i => item.SpecialtyID == i.SpecialtyID)!.Name ),
+		    new ValidatedEntry("Имя", Validators.LettersOnly, item.FirstName),
+		    new ValidatedEntry("Отчество", Validators.RequiredMidName, item.MidName),
+		    new ValidatedEntry("Фамилия", Validators.LettersOnly, item.LastName),
+		    new ValidatedEntry("Адрес", Validators.RequiredNotNull, item.Address),
+		    new ValidatedEntry("Телефон", 
+			    s => Validators.DigitsOnlyFixedLength(s, 11), item.Phone),
+		    new ValidatedEntry("Возраст", Validators.RequiredDigitsOnly, item.Age.ToString()),
+		    new ValidatedEntry("Стаж", Validators.RequiredDigitsOnly, item.Skill.ToString())
+	    };
+	    var inputView = new InputView<TableData.Employee>(
+		    "Редактирование данных сотрудника", 
+		    fields,
+		    ctrls => new TableData.Employee
+		    {
+			    EmployeeID = item.EmployeeID,
+			    SpecialtyID = 
+				    ViewModel.Specialties.FirstOrDefault(a => a.Name == ((string?)ctrls[0].GetValue() ?? "1"))!.SpecialtyID,
+			    FirstName = (string?)ctrls[1].GetValue() ?? "",
+			    MidName = (string?)ctrls[2].GetValue() ?? "",
+			    LastName = (string?)ctrls[3].GetValue() ?? "",
+			    Address = (string?)ctrls[4].GetValue() ?? "",
+			    Phone = (string?)ctrls[5].GetValue() ?? "",
+			    Age =  int.Parse((string?)ctrls[6].GetValue() ?? "18"),
+			    Skill = int.Parse((string?)ctrls[7].GetValue() ?? "1")
+		    },
+		    onSuccess: result =>
+		    {
+			    ViewModel.Update(item, result);
+			    DisplayAlertAsync("Успешное редактирование", $"Вы ввели: {result}", "OK");
+		    }
+	    );
+	    await Navigation.PushModalAsync(inputView);
+    }
+    protected override void OnDelete(TableData.Employee item) => ViewModel.Delete(item);
 }
