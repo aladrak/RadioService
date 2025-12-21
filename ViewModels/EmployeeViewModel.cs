@@ -11,6 +11,8 @@ public class EmployeeViewModel
         get => _employees;
         private set => _employees = value; 
     }
+
+    public List<TableData.Specialty> Specialties;
     private ObservableCollection<TableData.Employee> _employees = [];
     private readonly ITableRepository<TableData.Employee> _repository;
 
@@ -18,6 +20,9 @@ public class EmployeeViewModel
     {
         _repository = new TableRepository<TableData.Employee>("employee.json");
         Employees = new ObservableCollection<TableData.Employee>(_repository.GetAll());
+        
+        Specialties =
+		    new TableRepository<TableData.Specialty>("specialty.json").GetAll();
     }
     public void Add(TableData.Employee e)
     {
@@ -29,9 +34,9 @@ public class EmployeeViewModel
         Employees.Remove(e);
         _repository.InsertOrUpdate(Employees.ToList());
     }
-    public void Update(TableData.Employee e)
+    public void Update(TableData.Employee old, TableData.Employee cur)
     {
-        Employees.Insert(Employees.IndexOf(e), e);
+        Employees[Employees.IndexOf(old)] = cur;
         _repository.InsertOrUpdate(Employees.ToList());
     }
 }
