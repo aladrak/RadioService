@@ -43,7 +43,7 @@
 			public string Country { get; set; }
 			public string Manufacturer { get; set; }
 			public string Photo { get; set; } // link to photo
-			public DateTime ServiceLife { get; set; }
+			public DateOnly ServiceLife { get; set; }
 			public override string ToString()
 			{
 				return $"{Type} {Mark} {Country} {Manufacturer} {Photo}";
@@ -82,9 +82,9 @@
 			
 			public int? CompanyID { get; set; }
 			public int? PersonID { get; set; }
-			
-			public DateTime StartDate { get; set; } // DateTime field
-			public DateTime FinishDate { get; set; }
+
+			public DateOnly StartDate { get; set; } // DateTime field
+			public DateOnly FinishDate { get; set; }
 			public List<string> FaultsList { get; set; } // thinking...
 			public double Price { get; set; }
 			public override string ToString()
