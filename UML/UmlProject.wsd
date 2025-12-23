@@ -1,0 +1,421 @@
+
+' @startuml CompleteArchitecture
+
+' package "Application Layer" {
+'   class App {
+'     + CreateWindow(): Window
+'   }
+  
+'   class MauiProgram {
+'     + CreateMauiApp(): MauiApp
+'   }
+  
+'   class AppShell {
+'     + AppShell()
+'     - RegisterRoutes()
+'   }
+  
+'   class MainPage {
+'     + MainPage()
+'   }
+' }
+
+' package "Views" {
+'   abstract class ListViewBase_T {
+'     + ListViewBase()
+'     # {abstract} ShowAddForm(): Task
+'     # {abstract} ShowEditForm(item: T): Task
+'     # {abstract} OnDelete(item: T): void
+'   }
+  
+'   class PersonListView extends ListViewBase_T
+'   class CompanyListView extends ListViewBase_T
+'   class ProductListView extends ListViewBase_T
+'   class EmployeeListView extends ListViewBase_T
+'   class OrderListView extends ListViewBase_T
+  
+'   class InputView_T {
+'     + InputView()
+'   }
+  
+'   class OrderInputPage {
+'     + OrderInputPage()
+'   }
+' }
+
+' package "ViewModels" {
+'   class PersonViewModel
+'   class CompanyViewModel
+'   class ProductViewModel
+'   class EmployeeViewModel
+'   class OrderViewModel
+' }
+
+' package "Data Layer" {
+'   interface ITableRepository_T {
+'     + GetAll(): List<T>
+'     + InsertOrUpdate(e: List<T>): void
+'   }
+  
+'   class TableRepository_T implements ITableRepository_T {
+'     + GetAll(): List<T>
+'     + InsertOrUpdate(data: List<T>): void
+'   }
+' }
+
+' package "Validation System" {
+'   interface IInputControl {
+'     + Control: View
+'     + ErrorLabel: Label
+'     + IsValid: bool
+'     + GetValue(): object?
+'     + SetValue(value: object?): void
+'   }
+  
+'   class ValidatedEntry implements IInputControl
+'   class ValidatedPicker implements IInputControl
+'   class ValidatedDateField implements IInputControl
+  
+'   class Validators {}
+' }
+
+' ' Наследование
+' ContentPage <|-- ListViewBase_T
+' ListViewBase_T <|-- PersonListView
+' ListViewBase_T <|-- CompanyListView
+' ListViewBase_T <|-- ProductListView
+' ListViewBase_T <|-- EmployeeListView
+' ListViewBase_T <|-- OrderListView
+' ContentPage <|-- InputView_T
+' ContentPage <|-- OrderInputPage
+' ContentPage <|-- MainPage
+' Shell <|-- AppShell
+
+' ' Композиция и использование
+' MainPage ..> AppShell : navigates to
+
+' PersonListView --> PersonViewModel : uses
+' CompanyListView --> CompanyViewModel : uses
+' ProductListView --> ProductViewModel : uses
+' EmployeeListView --> EmployeeViewModel : uses
+' OrderListView --> OrderViewModel : uses
+
+' PersonListView ..> InputView_T : creates
+' CompanyListView ..> InputView_T : creates
+' ProductListView ..> InputView_T : creates
+' EmployeeListView ..> InputView_T : creates
+' OrderListView ..> OrderInputPage : creates
+
+' InputView_T --> "1..*" IInputControl : aggregates
+' OrderInputPage --> "1..*" IInputControl : aggregates
+
+' IInputControl <|.. ValidatedEntry
+' IInputControl <|.. ValidatedPicker
+' IInputControl <|.. ValidatedDateField
+
+' ' ValidatedEntry ..> Entry
+' ' ValidatedPicker ..> Picker
+' ' ValidatedDateField ..> DatePicker
+
+' ValidatedEntry ..> Validators : uses
+' ValidatedPicker ..> Validators : uses
+' ValidatedDateField ..> Validators : uses
+
+' PersonViewModel --> ITableRepository_T : uses
+' CompanyViewModel --> ITableRepository_T : uses
+' ProductViewModel --> ITableRepository_T : uses
+' EmployeeViewModel --> ITableRepository_T : uses
+' OrderViewModel --> ITableRepository_T : uses
+
+' ITableRepository_T <|.. TableRepository_T
+
+' OrderViewModel --> PersonViewModel : aggregates
+' OrderViewModel --> CompanyViewModel : aggregates
+' OrderViewModel --> ProductViewModel : aggregates
+' OrderViewModel --> EmployeeViewModel : aggregates
+
+' ListViewBase_T --> CollectionView : contains
+
+' note right of IInputControl
+'   Стратегия валидации:
+'   разные контролы с единым интерфейсом
+' end note
+
+' note right of ITableRepository_T
+'   Паттерн Repository:
+'   абстракция доступа к данным
+' end note
+
+' @enduml
+
+' @startuml ValidatedComponents
+' class ValidatedEntry implements IInputControl {
+'   - Control: Entry
+'   - ErrorLabel: Label
+'   - _validator: DelegateValidator
+'   - _lastNotifiedValue: string?
+'   - IsValid: bool
+'   --
+'   + ValidatedEntry(placeholder: string, validator: DelegateValidator, initialValue: string?)
+'   - OnTextChanged(sender: object?, e: TextChangedEventArgs): void
+'   + GetValue(): object?
+'   + SetValue(value: object?): void
+' }
+
+' class ValidatedPicker implements IInputControl {
+'   - Control: Picker
+'   - ErrorLabel: Label
+'   - _items: string[]
+'   - Validator: DelegateValidator
+'   - IsValid: bool
+'   --
+'   + ValidatedPicker(title: string, items: string[], validator: DelegateValidator, initialValue: string?)
+'   - OnSelectionChanged(sender: object?, e: EventArgs): void
+'   + GetValue(): object?
+'   + SetValue(value: object?): void
+' }
+
+' class ValidatedDateField implements IInputControl {
+'   - Control: DatePicker
+'   - ErrorLabel: Label
+'   - _validator: DelegateValidator
+'   - _lastNotifiedValue: string?
+'   - IsValid: bool
+'   --
+'   + ValidatedDateField(title: string, validator: DelegateValidator, initialValue: DateTime?)
+'   - OnDateChanged(sender: object?, e: DateChangedEventArgs): void
+'   + GetValue(): object?
+'   + SetValue(value: object?): void
+' }
+' @enduml
+
+' @startuml CompanyListView
+' class CompanyListView extends ListViewBase_Company {
+'   - {static} ViewModel: CompanyViewModel
+'   --
+'   + CompanyListView()
+'   - {static} CollectionItem(): Grid
+'   + ShowAddForm(): Task
+'   + ShowEditForm(item: Company): Task
+'   + OnDelete(item: Company): void
+' }
+' @enduml
+
+' @startuml EmployeeListView
+' class EmployeeListView extends ListViewBase_Employee {
+'   - {static} ViewModel: EmployeeViewModel
+'   --
+'   + EmployeeListView()
+'   - {static} CollectionItem(): Grid
+'   + ShowAddForm(): Task
+'   + ShowEditForm(item: Employee): Task
+'   + OnDelete(item: Employee): void
+' }
+' @enduml
+
+' @startuml OrderListView
+' class OrderListView extends ListViewBase_Order {
+'   - {static} ViewModel: OrderViewModel
+'   --
+'   + OrderListView()
+'   - {static} CollectionItem(): Grid
+'   + ShowAddForm(): Task
+'   + ShowEditForm(item: Order): Task
+'   + OnDelete(item: Order): void
+' }
+' @enduml
+
+' @startuml PersonListView
+' class PersonListView extends ListViewBase {
+'   - {static} ViewModel: PersonViewModel
+'   --
+'   + PersonListView()
+'   - {static} CollectionItem(): Grid
+'   + ShowAddForm(): Task
+'   + ShowEditForm(item: Person): Task
+'   + OnDelete(item: Person): void
+' }
+' @enduml
+
+' @startuml ProductListView
+' class ProductListView extends ListViewBase_Person {
+'   - {static} ViewModel: ProductViewModel
+'   --
+'   + ProductListView()
+'   - {static} CollectionItem(): Grid
+'   + ShowAddForm(): Task
+'   + ShowEditForm(item: Product): Task
+'   + OnDelete(item: Product): void
+' }
+' @enduml
+
+' @startuml ListViewBase
+' abstract class ListViewBase<T> {
+'   # CollectionView: CollectionView
+'   --
+'   + ListViewBase(title: string, headers: string[], items: ObservableCollection<T>, itemTemplate: Func<Grid>)
+'   # {abstract} ShowAddForm(): Task
+'   # {abstract} ShowEditForm(item: T): Task
+'   # {abstract} OnDelete(item: T): void
+'   - OnAddClicked(sender: object, e: EventArgs): void
+'   - OnSelectionChanged(sender: object, e: SelectionChangedEventArgs): void
+' }
+
+' ListViewBase --> CollectionView : contains
+' ListViewBase ..> UiTemplates : uses
+' ListViewBase --> "1" ScrollView : contains
+' @enduml
+
+' @startuml InputView
+' class InputView<T> {
+'   - _controls: List<IInputControl>
+'   - _factory: Func<IInputControl[], T>
+'   - _onSuccess: Action<T>
+'   - _saveButton: Button
+'   --
+'   + InputView(title: string, controls: List<IInputControl>, factory: Func<IInputControl[], T>, onSuccess: Action<T>)
+'   - OnSave(sender: object, e: EventArgs): void
+'   - UpdateSaveButton(): void
+' }
+
+' InputView --> "1..*" IInputControl : contains
+' InputView ..> Button : creates
+' InputView ..> VerticalStackLayout : creates
+' IInputControl <|.. ValidatedEntry
+' IInputControl <|.. ValidatedPicker
+' IInputControl <|.. ValidatedDateField
+' @enduml
+
+
+' @startuml OrderInputPage
+' class OrderInputPage {
+'   - _viewModel: OrderViewModel
+'   - _onResult: Action<Order>
+'   - _existingOrder: Order
+'   - _productPicker: ValidatedPicker
+'   - _employeePicker: ValidatedPicker
+'   - _customerTypePicker: ValidatedPicker
+'   - _companyPicker: ValidatedPicker
+'   - _personPicker: ValidatedPicker
+'   - _startDateField: ValidatedDateField
+'   - _finishDateField: ValidatedDateField
+'   - _faultsEntry: ValidatedEntry
+'   - _priceEntry: ValidatedEntry
+'   - _companyPickerLabel: Label
+'   - _personPickerLabel: Label
+'   --
+'   + OrderInputPage(viewModel: OrderViewModel, onResult: Action<Order>, existing: Order)
+'   - OnCustomerTypeChanged(value: string): void
+'   - ShowCompanyPicker(): void
+'   - ShowPersonPicker(): void
+'   - OnSaveClicked(sender: object, e: EventArgs): void
+' }
+' @enduml
+
+' @startuml PersonViewModel
+' class PersonViewModel {
+'   - _persons: ObservableCollection<Person>
+'   - _repository: ITableRepository<Person>
+'   --
+'   + Persons: ObservableCollection<Person>
+'   + FreeId: int {get}
+'   --
+'   + PersonViewModel()
+'   + Add(person: Person): void
+'   + Delete(person: Person): void
+'   + Update(old: Person, cur: Person): void
+' }
+' @enduml
+
+' @startuml CompanyViewModel
+' class CompanyViewModel {
+'   - _companies: ObservableCollection<Company>
+'   - _repository: ITableRepository<Company>
+'   --
+'   + Companies: ObservableCollection<Company>
+'   + FreeId: int {get}
+'   --
+'   + CompanyViewModel()
+'   + Add(e: Company): void
+'   + Delete(e: Company): void
+'   + Update(old: Company, cur: Company): void
+' }
+' @enduml
+
+
+' @startuml ProductViewModel
+' class ProductViewModel {
+'   - _products: ObservableCollection<Product>
+'   - _repository: ITableRepository<Product>
+'   --
+'   + Products: ObservableCollection<Product>
+'   + FreeId: int {get}
+'   --
+'   + ProductViewModel()
+'   + Add(e: Product): void
+'   + Delete(e: Product): void
+'   + Update(old: Product, cur: Product): void
+' }
+' @enduml
+
+
+' @startuml EmployeeViewModel
+' class EmployeeViewModel {
+'   - _employees: ObservableCollection<Employee>
+'   - _repository: ITableRepository<Employee>
+'   + Specialties: List<Specialty>
+'   --
+'   + Employees: ObservableCollection<Employee>
+'   + FreeId: int {get}
+'   --
+'   + EmployeeViewModel()
+'   + Add(e: Employee): void
+'   + Delete(e: Employee): void
+'   + Update(old: Employee, cur: Employee): void
+' }
+' @enduml
+
+
+' @startuml OrderViewModel
+' class OrderViewModel {
+'   - _orders: ObservableCollection<Order>
+'   - _repository: ITableRepository<Order>
+'   + Products: List<Product>
+'   + Employees: List<Employee>
+'   + Companies: List<Company>
+'   + Persons: List<Person>
+'   --
+'   + Orders: ObservableCollection<Order>
+'   + FreeId: int {get}
+'   --
+'   + OrderViewModel()
+'   + Add(e: Order): void
+'   + Delete(e: Order): void
+'   + Update(old: Order, cur: Order): void
+' }
+' @enduml
+
+' @startuml TableRepository
+' class TableRepository<T> {
+'   - {static} appName: string
+'   - {static} _appFolder: string
+'   - _filePath: string
+'   --
+'   + TableRepository(filePath: string)
+'   + GetAll(): List<T>
+'   + InsertOrUpdate(data: List<T>): void
+' }
+
+' TableRepository ..|> ITableRepository_T
+' TableRepository ..> JsonConvert : uses
+' TableRepository ..> File : uses
+' TableRepository ..> Path : uses
+' TableRepository ..> Environment : uses
+' @enduml
+
+' @startuml ITableRepository
+' interface ITableRepository<T> {
+'   + GetAll(): List<T>
+'   + InsertOrUpdate(e: List<T>): void
+' }
+' @enduml
