@@ -32,7 +32,8 @@ public class OrderInputPage : ContentPage
 
         // Picker
         var products = viewModel.Products.Select(p => $"{p.Type} {p.Mark} (ID: {p.ProductID})").ToArray();
-        var employees = viewModel.Employees.Select(e => $"{e.LastName} {e.FirstName} (ID: {e.EmployeeID})").ToArray();
+        var employees = viewModel.Employees
+            .Select(e => $"{viewModel.Specialties.FirstOrDefault(a => a.SpecialtyID == e.SpecialtyID)!.Name}, {e.LastName} {e.FirstName} (ID: {e.EmployeeID})").ToArray();
         var companies = viewModel.Companies.Select(c => $"{c.Name} (ID: {c.CompanyID})").ToArray();
         var persons = viewModel.Persons.Select(p => $"{p.LastName} {p.FirstName} (ID: {p.PersonID})").ToArray();
 
@@ -75,8 +76,10 @@ public class OrderInputPage : ContentPage
         // Даты
         _startDateField = new ValidatedDateField("Дата начала", Validators.RequiredBeforeToday);
         _finishDateField = new ValidatedDateField("Дата окончания", Validators.RequiredNotNull);
+        layout.Add(new Label{Text = "Дата начала", TextColor = Colors.LightGrey});
         layout.Add(_startDateField.Control);
         layout.Add(_startDateField.ErrorLabel);
+        layout.Add(new Label{Text = "Дата окончания", TextColor = Colors.LightGrey});
         layout.Add(_finishDateField.Control);
         layout.Add(_finishDateField.ErrorLabel);
 
