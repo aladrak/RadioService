@@ -15,6 +15,7 @@ public class OrderViewModel
     public List<TableData.Employee> Employees { get; private set; }
     public List<TableData.Company> Companies { get; private set; }
     public List<TableData.Person> Persons { get; private set; }
+    public List<TableData.Specialty> Specialties { get; private set; }
     private ObservableCollection<TableData.Order> _orders = [];
     private readonly ITableRepository<TableData.Order> _repository;
 
@@ -27,6 +28,7 @@ public class OrderViewModel
         Employees = new TableRepository<TableData.Employee>("employee.json").GetAll();
         Companies = new TableRepository<TableData.Company>("company.json").GetAll();
         Persons = new TableRepository<TableData.Person>("person.json").GetAll();
+        Specialties = new TableRepository<TableData.Specialty>("specialty.json").GetAll();
     }
     public void Add(TableData.Order e)
     {
