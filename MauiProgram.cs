@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.LifecycleEvents;
 
 namespace Radiotech
 {
@@ -16,6 +17,18 @@ namespace Radiotech
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+#if WINDOWS
+            // builder.ConfigureLifecycleEvents(events =>
+            // {
+            //     events.AddWindows(wndLifeCycleBuilder =>
+            //     {
+            //         wndLifeCycleBuilder.OnWindowCreated(window =>
+            //         {
+            //             IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            //         });
+            //     });
+            // });
+#endif
 
 #if DEBUG
     		builder.Logging.AddDebug();
