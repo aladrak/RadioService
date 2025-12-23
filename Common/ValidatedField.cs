@@ -20,8 +20,6 @@ public sealed class ValidatedEntry : IInputControl
 
     private readonly DelegateValidator _validator;
     private string? _lastNotifiedValue;
-    private string _currentError;
-    // private readonly Func<string, (bool, string)> _validator;
 
     // public ValidatedField(Entry entry, Label errorLabel, DelegateValidator validator)
     // {   
@@ -60,35 +58,24 @@ public sealed class ValidatedEntry : IInputControl
     View IInputControl.Control => Control;
 }
 
-
-
 public sealed class ValidatedPicker : IInputControl
 {
     public Picker Control { get; } = new();
     public Label ErrorLabel { get; } = new() { TextColor = Colors.Red, IsVisible = false };
-    public bool IsValid { get; private set; }
-    public object? GetValue() => Control.SelectedItem?.ToString();
+    public bool IsValid { get; private set; } = false;
+    public object? GetValue() => _items[Control.SelectedIndex];
     public event Action<string?>? ValueChanged;
-    public void Validate() => _validator(Control.SelectedItem?.ToString());
-    public void SetValue(object? value)
-    {
-        var idx = Array.IndexOf(_items, value?.ToString());
-        Control.SelectedIndex = idx;
-    }
 
     private readonly string[] _items;
-    private readonly Func<string?, (bool, string)> _validator;
-    // public int SelectedIndex { get => Control.SelectedIndex; }
-    // public DelegateValidator Validator { get; }
+    public DelegateValidator Validator { get; } = Validators.RequiredNotNull;
 
     public ValidatedPicker(
-        string title, 
-        string[] items, 
-        Func<string?, (bool, string)> validator, 
+        string title,
+        string[] items,
+        DelegateValidator validator,
         string? initialValue = null)
     {
         _items = items;
-        _validator = validator;
         Control.Title = title;
         Control.ItemsSource = items;
         if (initialValue != null)
@@ -96,38 +83,23 @@ public sealed class ValidatedPicker : IInputControl
             var idx = Array.IndexOf(items, initialValue);
             if (idx >= 0) Control.SelectedIndex = idx;
         }
+        Control.SelectedIndexChanged += OnSelectionChanged;
     }
-    
-    // public ValidatedPicker(
-    //     Picker picker,
-    //     string[] items,
-    //     Label errorLabel,
-    //     DelegateValidator validator)
-    // {
-    //     Control = picker;
-    //     _items = items;
-    //     ErrorLabel = errorLabel ?? throw new ArgumentNullException(nameof(errorLabel));
-    //     Validator = validator ?? throw new ArgumentNullException(nameof(validator));
-    //     Control.ItemsSource = items.ToList();
-    //     Control.SelectedIndexChanged += OnSelectionChanged;
-    //     
-    //     Validate();
-    // }
-
-    // private void OnSelectionChanged(object? sender, EventArgs e)
-    // {
-    //     SelectedValue = Control.SelectedIndex >= 0
-    //         ? _items[Control.SelectedIndex]
-    //         : "";
-    //     Validate();
-    // }
-
-    // public void Validate()
-    // {
-    //     (IsValid, _currentError) = Validator(SelectedValue);
-    //     ErrorLabel.Text = _currentError;
-    //     ErrorLabel.IsVisible = !string.IsNullOrEmpty(_currentError);
-    // }
+    private void OnSelectionChanged(object? sender, EventArgs e)
+    {
+        (IsValid, var error) = Validator((string?)Control.SelectedItem);
+        ErrorLabel.Text = error;
+        ErrorLabel.IsVisible = !string.IsNullOrEmpty(error);
+        ValueChanged?.Invoke(_items[Control.SelectedIndex]);
+        // ? _items[Control.SelectedIndex]
+        //     : "";
+        // Validate();
+    }
+    public void SetValue(object? value)
+    {
+        var idx = Array.IndexOf(_items, value?.ToString());
+        Control.SelectedIndex = idx;
+    }
     View IInputControl.Control => Control;
 }
 
@@ -142,14 +114,33 @@ public class ValidatedDateField : IInputControl
     private string? _lastNotifiedValue;
     private string _currentError;
 
-    public ValidatedDateField(string title, DelegateValidator validator, DateTime? initialValue = null)
+    public ValidatedDateField(
+        string title, 
+        DelegateValidator validator, 
+        DateTime? initialValue = null)
     {
         // Control.;
         _validator = validator;
         Control.Date = initialValue ?? DateTime.Today;
+        Control.DateSelected += OnDateChanged;
     }
 
-    public object? GetValue() => Control.Date;
+    private void OnDateChanged(object? sender, DateChangedEventArgs e)
+    {
+        (IsValid, var error) = _validator(e.NewDate?.ToString() ?? "");
+        ErrorLabel.Text = error;
+        ErrorLabel.IsVisible = !string.IsNullOrEmpty(error);
+
+        if (e.NewDate.ToString() != _lastNotifiedValue)
+        {
+            _lastNotifiedValue = e.NewDate.ToString() ?? string.Empty;
+            ValueChanged?.Invoke(_lastNotifiedValue);
+        }
+    }
+    public object? GetValue() => new DateOnly(
+        Control.Date.Value.Year, 
+        Control.Date.Value.Month, 
+        Control.Date.Value.Day);
     public void SetValue(object? value) => Control.Date = value is DateTime dt ? dt : DateTime.Today;
     View IInputControl.Control => Control;
 }

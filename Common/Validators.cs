@@ -2,12 +2,12 @@
 
 public static class Validators
 {
-    public static (bool isValid, string error) RequiredLettersOnly(string? input)
+    public static (bool isValid, string error) LettersOnly(string? input)
     {
         if (string.IsNullOrWhiteSpace(input)) 
-            return (false, "The field cannot be empty");
+            return (false, "Поле не может быть пустым.");
         if (!input.All(char.IsLetter))
-            return (false, "Only letters (Latin or Cyrillic) are allowed");
+            return (false, "Разрешены только буквы");
         return (true, string.Empty);
     }
     
@@ -16,45 +16,71 @@ public static class Validators
         if (string.IsNullOrWhiteSpace(input)) 
             return (true, "");
         if (!input.All(char.IsLetter))
-            return (false, "Only letters (Latin or Cyrillic) are allowed");
+            return (false, "Разрешены только буквы.");
         return (true, string.Empty);
     }
     
-    public static (bool isValid, string error) RequiredDigitsOnlyFixedLength(string? input, int length)
+    public static (bool isValid, string error) RequiredDiscountCard(string? input)
     {
         if (string.IsNullOrWhiteSpace(input)) 
-            return (false, "The field cannot be empty");
+            return (true, "");
         if (!input.All(char.IsDigit))
-            return (false, "Only digits are allowed");
+            return (false, "Разрешены только цифры.");
+        if (input.Length != 7 && input.Length > 0)
+            return (false, $"Необходимая длина - 7 цифр.");
+        return (true, string.Empty);
+    }
+    
+    public static (bool isValid, string error) DigitsOnlyFixedLength(string? input, int length)
+    {
+        if (string.IsNullOrWhiteSpace(input)) 
+            return (false, "Поле не может быть пустым.");
+        if (!input.All(char.IsDigit))
+            return (false, "Разрешены только цифры.");
         if (input.Length != length)
-            return (false, $"Required length is - {length} symbols");
+            return (false, $"Необходимая длина - {length} цифр.");
         return (true, string.Empty);
     }
 
-    public static (bool isValid, string error) RequiredPositiveDigitsOnly(string? input)
+    public static (bool isValid, string error) RequiredDigitsOnly(string? input)
     {
         if (string.IsNullOrWhiteSpace(input)) 
-            return (false, "The field cannot be empty");
+            return (false, "Поле не может быть пустым.");
         if (!input.All(char.IsDigit))
-            return (false, "Only digits are allowed");
-        // if (int.Parse(input) > 0)
-        //     return (false, "The value of the number must be positive");
+            return (false, "Разрешены только цифры.");
         return (true, string.Empty);
     }
-
-    public static (bool isValid, string error) RequiredLength(string? input, int length)
+    
+    public static (bool isValid, string error) LettersSpacesCommasOnly(string? input)
     {
-        if (string.IsNullOrWhiteSpace(input)) 
-            return (false, "The field cannot be empty");
-        if (input.Length == length)
-            return (false, $"Required length is - {length} characters");
-        return (true, string.Empty);
+        if (string.IsNullOrWhiteSpace(input))
+            return (false, "Поле не может быть пустым.");
+        foreach (char c in input)
+        {
+            if (!char.IsLetter(c) && c != ' ' && c != ',' && c != '"')
+                return (false, "Разрешены только буквы, пробелы и запятые.");
+        }
+
+        return (true, "");
     }
 
     public static (bool isValid, string error) RequiredNotNull(string? input)
     {
         if (string.IsNullOrWhiteSpace(input)) 
-            return (false, "The field cannot be empty");
+            return (false, "Поле не может быть пустым.");
         return (true, string.Empty);
+    }
+    public static (bool, string) RequiredDate(string? input)
+    {
+        return (true, "");
+    }
+
+    public static (bool, string) RequiredPositiveDouble(string? input)
+    {
+        if (string.IsNullOrWhiteSpace(input)) 
+            return (false, "Укажите стоимость");
+        if (!double.TryParse(input, out var d) || d <= 0)
+            return (false, "Стоимость должна быть положительным числом");
+        return (true, "");
     }
 }
