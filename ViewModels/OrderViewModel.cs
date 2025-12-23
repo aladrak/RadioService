@@ -23,7 +23,7 @@ public class OrderViewModel
         _repository = new TableRepository<TableData.Order>("order.json");
         Orders = new ObservableCollection<TableData.Order>(_repository.GetAll());
         
-        Products = new TableRepository<TableData.Product>("products.json").GetAll();
+        Products = new TableRepository<TableData.Product>("product.json").GetAll();
         Employees = new TableRepository<TableData.Employee>("employee.json").GetAll();
         Companies = new TableRepository<TableData.Company>("company.json").GetAll();
         Persons = new TableRepository<TableData.Person>("person.json").GetAll();
