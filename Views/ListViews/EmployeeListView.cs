@@ -80,7 +80,7 @@ public class EmployeeListView : ListViewBase<TableData.Employee>
 	    var fields = new List<IInputControl>
 	    {
 		    new ValidatedPicker("Специальность", ViewModel.Specialties
-			    .Select<TableData.Specialty, string>(n => n.Name).ToArray()),
+			    .Select<TableData.Specialty, string>(n => n.Name).ToArray(), Validators.RequiredNotNull),
 		    new ValidatedEntry("Имя", Validators.LettersOnly),
 		    new ValidatedEntry("Отчество", Validators.RequiredMidName),
 		    new ValidatedEntry("Фамилия", Validators.LettersOnly),
@@ -118,8 +118,8 @@ public class EmployeeListView : ListViewBase<TableData.Employee>
 	    var fields = new List<IInputControl>
 	    {
 		    new ValidatedPicker("Специальность", ViewModel.Specialties
-			    .Select<TableData.Specialty, string>(n => n.Name).ToArray(), 
-			    ViewModel.Specialties.FirstOrDefault(i => item.SpecialtyID == i.SpecialtyID)!.Name ),
+			    .Select<TableData.Specialty, string>(n => n.Name).ToArray(), Validators.RequiredNotNull,
+			    ViewModel.Specialties.FirstOrDefault(i => item.SpecialtyID == i.SpecialtyID)!.Name),
 		    new ValidatedEntry("Имя", Validators.LettersOnly, item.FirstName),
 		    new ValidatedEntry("Отчество", Validators.RequiredMidName, item.MidName),
 		    new ValidatedEntry("Фамилия", Validators.LettersOnly, item.LastName),
