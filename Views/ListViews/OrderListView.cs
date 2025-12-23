@@ -94,6 +94,7 @@ public class OrderListView : ContentPage
         var grid = new Grid
         {
             Padding = 10,
+            ColumnSpacing = 10,
             ColumnDefinitions =
             [
                 new(20), // ID
