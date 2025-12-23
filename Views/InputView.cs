@@ -28,12 +28,12 @@ public class InputView<T> : ContentPage
             layout.Add(control.ErrorLabel);
         }
 
-        _saveButton = new Button { Text = "Save", WidthRequest = 100, BackgroundColor = Colors.Green, 
+        _saveButton = new Button { Text = "Сохранить", WidthRequest = 100, BackgroundColor = Colors.Green, 
             IsEnabled = false 
         };
         _saveButton.Clicked += OnSave;
 
-        var cancel = new Button { Text = "Cancel", WidthRequest = 100 };
+        var cancel = new Button { Text = "Отмена", WidthRequest = 100 };
         cancel.Clicked += (_, _) => Navigation.PopModalAsync();
 
         layout.Add(new HorizontalStackLayout { Children = { _saveButton, cancel } });
