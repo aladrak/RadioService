@@ -1,4 +1,6 @@
-﻿namespace Radiotech
+﻿using Microsoft.UI.Windowing;
+
+namespace Radiotech
 {
     public partial class App : Application
     {
@@ -9,7 +11,9 @@
         
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new AppShell());
+            var window = new AppShell();
+            // window.Window.
+            return new Window(window);
         }
     }
 }
