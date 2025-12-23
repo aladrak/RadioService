@@ -12,7 +12,6 @@ namespace Radiotech
         protected override Window CreateWindow(IActivationState? activationState)
         {
             var window = new AppShell();
-            // window.Window.
             return new Window(window);
         }
     }
