@@ -57,8 +57,8 @@ public static class Validators
             return (false, "Поле не может быть пустым.");
         foreach (char c in input)
         {
-            if (!char.IsLetter(c) && c != ' ' && c != ',' && c != '"')
-                return (false, "Разрешены только буквы, пробелы и запятые.");
+            if (!char.IsLetter(c) && c != ' ' && c != ',' && c != '"' && c != '.' && c != '-')
+                return (false, "Разрешены только буквы, пробелы, дефисы, точки и запятые.");
         }
 
         return (true, "");
@@ -70,10 +70,18 @@ public static class Validators
             return (false, "Поле не может быть пустым.");
         return (true, string.Empty);
     }
-    public static (bool, string) RequiredDate(string? input)
+    public static (bool, string) RequiredBeforeToday(string? input)
     {
+        if (!DateTime.TryParse(input, out var date) || date >= DateTime.Today)
+            return (false, "Дата не может быть позже сегодняшней.");
         return (true, "");
     }
+    // public static (bool, string) RequiredAfterToday(string? input)
+    // {
+    //     if (!DateTime.TryParse(input, out var date) || date >= DateTime.Today)
+    //         return (false, "Дата превышает доступные пределы");
+    //     return (true, "");
+    // }
 
     public static (bool, string) RequiredPositiveDouble(string? input)
     {
