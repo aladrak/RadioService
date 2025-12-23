@@ -73,10 +73,12 @@ public class OrderInputPage : ContentPage
         layout.Add(_personPicker.ErrorLabel);
 
         // Даты
-        _startDateField = new ValidatedDateField("Дата начала", Validators.RequiredDate);
-        _finishDateField = new ValidatedDateField("Дата окончания", Validators.RequiredDate);
+        _startDateField = new ValidatedDateField("Дата начала", Validators.RequiredBeforeToday);
+        _finishDateField = new ValidatedDateField("Дата окончания", Validators.RequiredNotNull);
         layout.Add(_startDateField.Control);
+        layout.Add(_startDateField.ErrorLabel);
         layout.Add(_finishDateField.Control);
+        layout.Add(_finishDateField.ErrorLabel);
 
         // Список неисправностей — пока как одна строка, через запятую
         _faultsEntry = new ValidatedEntry("Неисправности (через запятую)", Validators.LettersSpacesCommasOnly, initialValue: "");
@@ -165,23 +167,12 @@ public class OrderInputPage : ContentPage
 
     private async void OnSaveClicked(object sender, EventArgs e)
     {
-        // Валидация
-        // _productPicker.Validate();
-        // _employeePicker.Validate();
-        // _customerTypePicker.Validate();
-        // _startDateField.Validate();
-        // _finishDateField.Validate();
-        // _faultsEntry.Validate();
-        // _priceEntry.Validate();
-
         if ((string?)_customerTypePicker.GetValue() == "Компания")
         {
-            // _companyPicker.Validate();
             if (!_companyPicker.IsValid) return;
         }
         else if ((string?)_customerTypePicker.GetValue() == "Физическое лицо")
         {
-            // _personPicker.Validate();
             if (!_personPicker.IsValid) return;
         }
 
@@ -189,7 +180,13 @@ public class OrderInputPage : ContentPage
             !_startDateField.IsValid || !_finishDateField.IsValid ||
             !_faultsEntry.IsValid || !_priceEntry.IsValid)
         {
-            await DisplayAlert("Ошибка", "Проверьте введённые данные", "OK");
+            await DisplayAlertAsync("Ошибка", "Проверьте введённые данные", "OK");
+            return;
+        }
+
+        if ((DateOnly?)_startDateField.GetValue() > (DateOnly?)_finishDateField.GetValue())
+        {
+            await DisplayAlertAsync("Ошибка", "Дата начала больше даты окончания", "OK");
             return;
         }
 
@@ -231,7 +228,7 @@ public class OrderInputPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ошибка", ex.Message, "OK");
+            await DisplayAlertAsync("Ошибка", ex.Message, "OK");
         }
     }
 }

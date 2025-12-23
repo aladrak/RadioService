@@ -70,11 +70,11 @@ public class ProductListView : ListViewBase<TableData.Product>
 	    var fields = new List<IInputControl>
 	    {
 		    new ValidatedEntry("Тип", Validators.LettersSpacesCommasOnly),
-		    new ValidatedEntry("Марка", Validators.LettersSpacesCommasOnly),
+		    new ValidatedEntry("Марка", Validators.RequiredNotNull),
 		    new ValidatedEntry("Страна", Validators.LettersOnly),
 		    new ValidatedEntry("Производитель", Validators.LettersSpacesCommasOnly),
 		    new ValidatedEntry("Изображение", Validators.RequiredNotNull),
-		    new ValidatedDateField("Срок службы", Validators.RequiredNotNull)
+		    new ValidatedDateField("Срок службы", Validators.RequiredBeforeToday)
 	    };
 	    var inputView = new InputView<TableData.Product>(
 		    "Добавление изделия", 
@@ -102,11 +102,11 @@ public class ProductListView : ListViewBase<TableData.Product>
 	    var fields = new List<IInputControl>
 	    {
 		    new ValidatedEntry("Тип", Validators.LettersSpacesCommasOnly, item.Type),
-		    new ValidatedEntry("Марка", Validators.LettersSpacesCommasOnly, item.Mark),
+		    new ValidatedEntry("Марка", Validators.RequiredNotNull, item.Mark),
 		    new ValidatedEntry("Страна", Validators.LettersOnly, item.Country),
 		    new ValidatedEntry("Производитель", Validators.LettersSpacesCommasOnly, item.Manufacturer),
 		    new ValidatedEntry("Изображение", Validators.RequiredNotNull, item.Photo),
-		    new ValidatedDateField("Срок службы", Validators.RequiredNotNull, 
+		    new ValidatedDateField("Срок службы", Validators.RequiredBeforeToday, 
 			    item.ServiceLife.ToDateTime(TimeOnly.MinValue)),
 	    };
 	    var inputView = new InputView<TableData.Product>(

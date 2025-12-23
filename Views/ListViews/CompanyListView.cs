@@ -80,7 +80,7 @@ public class CompanyListView : ListViewBase<TableData.Company>
     {
 	    var fields = new List<IInputControl>
 	    {
-		    new ValidatedEntry("Название", Validators.LettersSpacesCommasOnly),
+		    new ValidatedEntry("Название", Validators.RequiredNotNull),
 		    new ValidatedEntry("ФИО Руководителя", Validators.LettersSpacesCommasOnly),
 		    new ValidatedEntry("Банк", Validators.LettersSpacesCommasOnly),
 		    new ValidatedEntry("Расчетный счет", 
@@ -119,7 +119,7 @@ public class CompanyListView : ListViewBase<TableData.Company>
     {
 	    var fields = new List<IInputControl>
 	    {
-		    new ValidatedEntry("Название", Validators.LettersSpacesCommasOnly, item.Name),
+		    new ValidatedEntry("Название", Validators.RequiredNotNull, item.Name),
 		    new ValidatedEntry("ФИО Руководителя", Validators.LettersSpacesCommasOnly, item.ManagerFullName),
 		    new ValidatedEntry("Банк", Validators.LettersSpacesCommasOnly, item.Bank),
 		    new ValidatedEntry("Расчетный счет", 
