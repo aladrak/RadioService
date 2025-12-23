@@ -63,7 +63,7 @@ public sealed class ValidatedPicker : IInputControl
     public Picker Control { get; } = new();
     public Label ErrorLabel { get; } = new() { TextColor = Colors.Red, IsVisible = false };
     public bool IsValid { get; private set; } = false;
-    public object? GetValue() => _items[Control.SelectedIndex];
+    public object? GetValue() => Control.SelectedIndex == -1 ? "" : _items[Control.SelectedIndex];
     public event Action<string?>? ValueChanged;
 
     private readonly string[] _items;
@@ -80,6 +80,7 @@ public sealed class ValidatedPicker : IInputControl
         Control.ItemsSource = items;
         if (initialValue != null)
         {
+            IsValid = true;
             var idx = Array.IndexOf(items, initialValue);
             if (idx >= 0) Control.SelectedIndex = idx;
         }
