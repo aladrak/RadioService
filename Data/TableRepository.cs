@@ -9,7 +9,8 @@ public class TableRepository<T> : ITableRepository<T>
 	private readonly string _filePath;
 	static TableRepository() 
 	{
-		_appFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), appName);
+		_appFolder = Path.Combine(Directory.GetCurrentDirectory(), appName);
+		// _appFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), appName);
 		Directory.CreateDirectory(_appFolder);
 	}
 
