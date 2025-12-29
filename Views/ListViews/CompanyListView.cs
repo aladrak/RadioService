@@ -9,12 +9,12 @@ public class CompanyListView : ListViewBase<TableData.Company>
     private static readonly CompanyViewModel ViewModel = new();
 
     public CompanyListView() : base(
-	    "Компания",
+	    "Компанию",
 	    ["ID", "Название", "ФИО Руководителя", "Банк", "Р.Счет", "ИНН", "Адрес", "Телефон", "Карта"],
 	    ViewModel.Companies,
 	    CollectionItem)
     {
-	    // Nothing now
+	    Title = "Список компаний";
     }
 
     private static Grid CollectionItem()

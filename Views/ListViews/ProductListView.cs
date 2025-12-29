@@ -13,7 +13,7 @@ public class ProductListView : ListViewBase<TableData.Product>
 	    ViewModel.Products,
 	    CollectionItem)
     {
-	    // Nothing now
+	    Title = "Список изделий";
     }
 
     private static Grid CollectionItem()

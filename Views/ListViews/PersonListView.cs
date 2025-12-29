@@ -14,7 +14,7 @@ public class PersonListView : ListViewBase<TableData.Person>
 	    ViewModel.Persons,
 	    CollectionItem)
     {
-	    // Nothing now
+	    Title = "Список физических лиц";
     }
 
     private static Grid CollectionItem()
