@@ -5,34 +5,36 @@ using Radiotech.ViewModels;
 
 namespace Radiotech.Views.ListViews;
 
-internal class OrderDisplayItem
-{
-	public TableData.Order Source { get; }
-	public string ProductName { get; }
-	public string EmployeeName { get; }
-	public string CustomerName { get; }
-	public string FaultsDisplay { get; }
-
-	public OrderDisplayItem(TableData.Order order, 
-		IReadOnlyDictionary<int, string> productDict,
-		IReadOnlyDictionary<int, string> empDict,
-		IReadOnlyDictionary<int, string> compDict,
-		IReadOnlyDictionary<int, string> persDict)
-	{
-		Source = order;
-		ProductName = productDict.GetValueOrDefault(order.ProductID, $"[? product {order.ProductID}]");
-		EmployeeName = empDict.GetValueOrDefault(order.EmployeeID, $"[? emp {order.EmployeeID}]");
-		CustomerName = order.CompanyID.HasValue
-			? compDict.GetValueOrDefault(order.CompanyID.Value, $"[? company {order.CompanyID}]")
-			: order.PersonID.HasValue
-				? persDict.GetValueOrDefault(order.PersonID.Value, $"[? person {order.PersonID}]")
-				: "[Заказчик не указан]";
-		FaultsDisplay = string.Join(", ", order.FaultsList);
-	}
-}
-
 public class OrderListView : ContentPage
 {
+    // Класс данных для отображения
+    private class OrderDisplayItem
+    {
+        public TableData.Order Source { get; }
+        public string ProductName { get; }
+        public string EmployeeName { get; }
+        public string CustomerName { get; }
+        public string FaultsDisplay { get; }
+
+        public OrderDisplayItem(
+            TableData.Order order, 
+            IReadOnlyDictionary<int, string> productDict,
+            IReadOnlyDictionary<int, string> empDict,
+            IReadOnlyDictionary<int, string> compDict,
+            IReadOnlyDictionary<int, string> persDict)
+        {
+            Source = order;
+            ProductName = productDict.GetValueOrDefault(order.ProductID, $"[? product {order.ProductID}]");
+            EmployeeName = empDict.GetValueOrDefault(order.EmployeeID, $"[? emp {order.EmployeeID}]");
+            CustomerName = order.CompanyID.HasValue
+                ? compDict.GetValueOrDefault(order.CompanyID.Value, $"[? company {order.CompanyID}]")
+                : order.PersonID.HasValue
+                    ? persDict.GetValueOrDefault(order.PersonID.Value, $"[? person {order.PersonID}]")
+                    : "[Заказчик не указан]";
+            FaultsDisplay = string.Join(", ", order.FaultsList);
+        }
+    }
+    
     private readonly CollectionView _collectionView;
     private readonly OrderViewModel _viewModel;
     private readonly ObservableCollection<OrderDisplayItem> _displayItems;
@@ -45,6 +47,7 @@ public class OrderListView : ContentPage
 
     public OrderListView()
     {
+        Title = "Список заказов";
         _viewModel = new OrderViewModel();
 
         _productDict = _viewModel.Products.ToDictionary(p => p.ProductID, p => $"{p.Type} {p.Mark}");
