@@ -7,6 +7,23 @@ namespace Radiotech.Views.ListViews;
 
 public class EmployeeListView : ListViewBase<TableData.Employee>
 {
+	// private class EmployeeDisplayItem
+	// {
+	// 	public TableData.Employee Source { get; }
+	// 	public string Specialty { get; }
+	// 	public string EmployeeName { get; }
+	// 	public string CustomerName { get; }
+	// 	public string FaultsDisplay { get; }
+	//
+	// 	public EmployeeDisplayItem(
+	// 		TableData.Employee employee, 
+	// 		IReadOnlyDictionary<int, string> productDict)
+	// 	{
+	// 		Source = employee;
+	// 		Speciatly = specialtyDict.GetValueOrDefault(employee.SpecialtyID, $"[? specialty {employee.SpecialtyID}]");
+	// 	}
+	// }
+	
     private static readonly EmployeeViewModel ViewModel = new();
     public EmployeeListView() : base(
 	    "Сотрудника",
@@ -14,7 +31,7 @@ public class EmployeeListView : ListViewBase<TableData.Employee>
 	    ViewModel.Employees,
 	    CollectionItem)
     {
-	    // Nothing now
+	    Title = "Список сотрудников";
     }
 
     private static Grid CollectionItem()
